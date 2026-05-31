@@ -1,0 +1,21 @@
+<div class="card card-custom h-100 border-0 border-start border-4 border-{{ color_class | default('primary') }}">
+    <div class="card-body p-4">
+        <div class="d-flex align-items-center justify-content-between">
+            <div>
+                <span class="text-uppercase text-muted fw-bold d-block mb-1" style="font-size: 0.8em; tracking-wider: 1px;">
+                    {{ title }}
+                </span>
+                <h3 class="mb-0 text-dark fw-bold fs-2">{{ value }}</h3>
+                {% if subtitle %}
+                <span class="text-muted d-block mt-2" style="font-size: 0.85em;">
+                    {{ subtitle }}
+                </span>
+                {% endif %}
+            </div>
+            
+            <div class="rounded-circle bg-{{ color_class | default('primary') }} bg-opacity-10 p-3 text-{{ color_class | default('primary') }} d-flex align-items-center justify-content-center" style="width: 56px; height: 56px;">
+                <i class="fa-solid {{ icon | default('fa-chart-pie') }} fa-xl"></i>
+            </div>
+        </div>
+    </div>
+</div>

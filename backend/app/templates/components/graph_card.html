@@ -1,0 +1,18 @@
+<div class="card card-custom h-100">
+    <div class="card-header card-header-custom d-flex align-items-center justify-content-between">
+        <span class="m-0 fs-6 fw-semibold">
+            <i class="fa-solid {{ icon | default('fa-chart-column') }} text-primary me-2"></i>{{ title }}
+        </span>
+        {% if badge_text %}
+        <span class="badge bg-primary bg-opacity-10 text-primary px-2.5 py-1 rounded-pill">
+            {{ badge_text }}
+        </span>
+        {% endif %}
+    </div>
+    
+    <div class="card-body p-4">
+        <div class="chart-container" style="position: relative; height: {{ height | default('280px') }}; width: 100%;">
+            <canvas id="{{ canvas_id }}"></canvas>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,91 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %}Operations Dashboard - Predictive Maintenance{% endblock %}
+
+{% block content %}
+<!-- Top Title Section -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="text-dark fw-bold mb-1">System Operational Health</h2>
+        <p class="text-muted mb-0">ML-driven automated predictions dashboard and dataset overview.</p>
+    </div>
+    <div class="d-flex gap-2">
+        <button class="btn btn-outline-secondary btn-sm rounded shadow-sm px-3 py-2 bg-white" onclick="location.reload()">
+            <i class="fa-solid fa-arrows-rotate me-1 text-primary"></i>Refresh Dashboard
+        </button>
+    </div>
+</div>
+
+<!-- TOP SECTION: Metric Cards -->
+<div class="row g-4 mb-4">
+    <div class="col-xl-3 col-md-6">
+        {% set title = "Total Ingested Data" %}
+        {% set value = total_machines | default("10,000") %}
+        {% set icon = "fa-database" %}
+        {% set color_class = "secondary" %}
+        {% set subtitle = "Total machine records processed" %}
+        {% include 'components/metric_card.html' %}
+    </div>
+    <div class="col-xl-3 col-md-6">
+        {% set title = "Healthy Operations" %}
+        {% set value = healthy_machines | default("9,660") %}
+        {% set icon = "fa-heart-circle-check" %}
+        {% set color_class = "success" %}
+        {% set subtitle = "Machines operating safely" %}
+        {% include 'components/metric_card.html' %}
+    </div>
+    <div class="col-xl-3 col-md-6">
+        {% set title = "Failure Anomalies" %}
+        {% set value = failure_predictions | default("340") %}
+        {% set icon = "fa-triangle-exclamation" %}
+        {% set color_class = "danger" %}
+        {% set subtitle = "Preventative maintenance flagged" %}
+        {% include 'components/metric_card.html' %}
+    </div>
+    <div class="col-xl-3 col-md-6">
+        {% set title = "Best Model Accuracy" %}
+        {% set value = model_accuracy | default("98.55%") %}
+        {% set icon = "fa-gauge-high" %}
+        {% set color_class = "primary" %}
+        {% set subtitle = "Tuned Random Forest model" %}
+        {% include 'components/metric_card.html' %}
+    </div>
+</div>
+
+<!-- MIDDLE SECTION: Visual Charts -->
+<div class="row g-4 mb-4">
+    <div class="col-xl-8 col-lg-7">
+        {% set title = "Classification Failure Distribution" %}
+        {% set canvas_id = "failureDistributionChart" %}
+        {% set icon = "fa-chart-pie" %}
+        {% set badge_text = "Operational Metrics" %}
+        {% include 'components/graph_card.html' %}
+    </div>
+    
+    <div class="col-xl-4 col-lg-5">
+        {% set title = "Optimal Model - Feature Importances" %}
+        {% set canvas_id = "featureImportanceChart" %}
+        {% set icon = "fa-ranking-star" %}
+        {% set badge_text = "ML Weights" %}
+        {% include 'components/graph_card.html' %}
+    </div>
+</div>
+
+<!-- BOTTOM SECTION: Recent Data predictions -->
+<div class="card card-custom mb-4">
+    <div class="card-header card-header-custom d-flex justify-content-between align-items-center">
+        <span class="fs-6 fw-semibold"><i class="fa-solid fa-list text-primary me-2"></i>Comprehensive predictions Logs</span>
+        <span class="badge bg-light text-secondary border">Total dataset records</span>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+            {{ table | safe }}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/charts.js') }}"></script>
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+{% endblock %}

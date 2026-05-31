@@ -7,6 +7,11 @@ from backend.app.services.analysis_service import AnalysisService
 prediction_bp = Blueprint("prediction", __name__)
 prediction_service = PredictionService()
 
+@prediction_bp.route("/predictions", methods=["GET"])
+def predict_view():
+    # Render the input parameters form page
+    return render_template("dashboard/predictions.html")
+
 @prediction_bp.route("/predict", methods=["POST"])
 def predict():
     # Extract values from request
@@ -20,15 +25,7 @@ def predict():
     features = [air_temp, process_temp, speed, torque, tool_wear]
     result = prediction_service.predict_single(features)
     
-    # Reload and predict batch to keep dataset table updated
-    data = pd.read_csv(Config.DATA_PATH)
-    predictions_df = prediction_service.predict_batch(data)
-    safe_count, fail_count = AnalysisService.get_prediction_counts(predictions_df)
-    
     return render_template(
-        "index.html",
-        prediction_text=result,
-        table=predictions_df.to_html(index=False),
-        safe=safe_count,
-        failure=fail_count
+        "dashboard/predictions.html",
+        prediction_text=result
     )

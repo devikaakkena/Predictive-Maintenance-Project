@@ -1,0 +1,30 @@
+<nav id="sidebar">
+    <div class="sidebar-header">
+        <h5 class="m-0 text-white">
+            <i class="fa-solid fa-circle-nodes text-primary me-2"></i>PredMaint Engine
+        </h5>
+    </div>
+    
+    <ul class="list-unstyled components">
+        <li class="{% if request.endpoint == 'dashboard.home' %}active{% endif %}">
+            <a href="{{ url_for('dashboard.home') }}">
+                <i class="fa-solid fa-table-columns"></i>Dashboard
+            </a>
+        </li>
+        <li class="{% if request.endpoint == 'analysis.index' %}active{% endif %}">
+            <a href="{{ url_for('analysis.index') }}">
+                <i class="fa-solid fa-chart-line"></i>Analytics
+            </a>
+        </li>
+        <li class="{% if request.endpoint == 'prediction.predict_view' %}active{% endif %}">
+            <a href="{{ url_for('prediction.predict_view') }}">
+                <i class="fa-solid fa-microchip"></i>Predictions
+            </a>
+        </li>
+    </ul>
+    
+    <div class="p-4 border-top border-secondary text-center text-muted" style="font-size: 0.8em; background-color: #0f172a;">
+        <span class="d-block text-uppercase tracking-wider">Model Status</span>
+        <span class="badge bg-success mt-2 px-2 py-1"><i class="fa-solid fa-circle-check me-1"></i>Active</span>
+    </div>
+</nav>

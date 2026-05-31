@@ -1,0 +1,92 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %}Operational Analytics - Predictive Maintenance{% endblock %}
+
+{% block content %}
+<!-- Top Title Section -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="text-dark fw-bold mb-1">Comparative Operations Analytics</h2>
+        <p class="text-muted mb-0">Analysis reports and performance metrics of trained classifiers.</p>
+    </div>
+</div>
+
+<!-- Extra Stats Metric Cards -->
+<div class="row g-4 mb-4">
+    <div class="col-md-4">
+        {% set title = "Optimal Precision" %}
+        {% set value = precision | default("0.8824") %}
+        {% set icon = "fa-crosshairs" %}
+        {% set color_class = "info" %}
+        {% set subtitle = "Precision score performance focus" %}
+        {% include 'components/metric_card.html' %}
+    </div>
+    <div class="col-md-4">
+        {% set title = "Optimal Recall" %}
+        {% set value = recall | default("0.6618") %}
+        {% set icon = "fa-binoculars" %}
+        {% set color_class = "warning" %}
+        {% set subtitle = "True positive anomaly detection rate" %}
+        {% include 'components/metric_card.html' %}
+    </div>
+    <div class="col-md-4">
+        {% set title = "Optimal F1-Score" %}
+        {% set value = f1_score | default("0.7563") %}
+        {% set icon = "fa-medal" %}
+        {% set color_class = "success" %}
+        {% set subtitle = "Harmonic mean of precision and recall" %}
+        {% include 'components/metric_card.html' %}
+    </div>
+</div>
+
+<!-- Comparison Charts Section -->
+<div class="row g-4 mb-4">
+    <div class="col-lg-6">
+        {% set title = "Classifiers Accuracy Comparison" %}
+        {% set canvas_id = "modelAccuracyChart" %}
+        {% set icon = "fa-chart-bar" %}
+        {% set badge_text = "validation Accuracy (%)" %}
+        {% include 'components/graph_card.html' %}
+    </div>
+    
+    <div class="col-lg-6">
+        {% set title = "Classifiers F1-Score Comparison" %}
+        {% set canvas_id = "modelF1Chart" %}
+        {% set icon = "fa-chart-line" %}
+        {% set badge_text = "validation F1-Score" %}
+        {% include 'components/graph_card.html' %}
+    </div>
+</div>
+
+<!-- Bottom Section: Confusion Matrix and Report text -->
+<div class="row g-4 mb-4">
+    <div class="col-lg-6">
+        {% set title = "Classification Confusion Matrix" %}
+        {% set canvas_id = "confusionMatrixChart" %}
+        {% set icon = "fa-table-cells" %}
+        {% set badge_text = "Validation True vs Pred" %}
+        {% include 'components/graph_card.html' %}
+    </div>
+    
+    <div class="col-lg-6">
+        <div class="card card-custom h-100">
+            <div class="card-header card-header-custom">
+                <span class="fs-6 fw-semibold">
+                    <i class="fa-solid fa-file-contract text-primary me-2"></i>Persisted Verification Summary Report
+                </span>
+            </div>
+            
+            <div class="card-body p-4 d-flex flex-column">
+                <pre class="bg-light p-3 rounded border text-secondary flex-grow-1 mb-0" style="font-family: monospace; font-size: 0.85em; max-height: 280px; overflow-y: auto; white-space: pre-wrap;">
+{{ report_text | default("Training comparison reports details will show here.") }}
+                </pre>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/charts.js') }}"></script>
+<script src="{{ url_for('static', filename='js/analytics.js') }}"></script>
+{% endblock %}

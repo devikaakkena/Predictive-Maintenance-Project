@@ -1,0 +1,98 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %}Real-Time Inference - Predictive Maintenance{% endblock %}
+
+{% block content %}
+<!-- Top Title Section -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="text-dark fw-bold mb-1">Dynamic Machine Inference</h2>
+        <p class="text-muted mb-0">Input sensor metrics in real-time to compute instant machine status predictions.</p>
+    </div>
+</div>
+
+<!-- Main Section Split -->
+<div class="row g-4 mb-4">
+    <!-- Form Card Left -->
+    <div class="col-lg-6">
+        <div class="card card-custom h-100">
+            <div class="card-header card-header-custom">
+                <span class="fs-6 fw-semibold">
+                    <i class="fa-solid fa-keyboard text-primary me-2"></i>Machine Sensor Metrics Form
+                </span>
+            </div>
+            
+            <div class="card-body p-4">
+                <form action="{{ url_for('prediction.predict') }}" method="POST">
+                    <div class="mb-3">
+                        <label class="form-label text-secondary fw-semibold">Air Temperature [K]</label>
+                        <input type="number" step="any" name="air_temp" class="form-control px-3 py-2" placeholder="e.g. 298.2" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label text-secondary fw-semibold">Process Temperature [K]</label>
+                        <input type="number" step="any" name="process_temp" class="form-control px-3 py-2" placeholder="e.g. 308.6" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label text-secondary fw-semibold">Rotational Speed [rpm]</label>
+                        <input type="number" step="any" name="speed" class="form-control px-3 py-2" placeholder="e.g. 1500" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label text-secondary fw-semibold">Torque [Nm]</label>
+                        <input type="number" step="any" name="torque" class="form-control px-3 py-2" placeholder="e.g. 40.5" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label text-secondary fw-semibold">Tool Wear [min]</label>
+                        <input type="number" step="any" name="tool_wear" class="form-control px-3 py-2" placeholder="e.g. 120" required>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary w-100 py-2.5 fw-semibold shadow-sm mt-3">
+                        <i class="fa-solid fa-wand-magic-sparkles me-2"></i>Execute Inference Prediction
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Result Card Right -->
+    <div class="col-lg-6">
+        <div class="card card-custom h-100 d-flex flex-column">
+            <div class="card-header card-header-custom">
+                <span class="fs-6 fw-semibold">
+                    <i class="fa-solid fa-square-poll-vertical text-primary me-2"></i>Inference Results Output
+                </span>
+            </div>
+            
+            <div class="card-body p-4 d-flex flex-column align-items-center justify-content-center text-center flex-grow-1">
+                {% if prediction_text %}
+                    <!-- Emojified result mapping -->
+                    <div class="rounded-circle p-4 mb-3 {% if 'Failure' in prediction_text %}bg-danger bg-opacity-10 text-danger{% else %}bg-success bg-opacity-10 text-success{% endif %} d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                        <i class="fa-solid {% if 'Failure' in prediction_text %}fa-triangle-exclamation{% else %}fa-circle-check{% endif %} fa-3x"></i>
+                    </div>
+                    
+                    <h3 class="fw-bold mb-2">Classified State</h3>
+                    <h2 class="display-6 fw-bold mb-3 {% if 'Failure' in prediction_text %}text-danger{% else %}text-success{% endif %}">
+                        {{ prediction_text }}
+                    </h2>
+                    <p class="text-muted px-4 mb-0">
+                        The machine learning model analyzed the input sensor parameters and has successfully classified the machine state as shown above.
+                    </p>
+                {% else %}
+                    <!-- Waiting for input parameters status -->
+                    <div class="rounded-circle bg-light p-4 mb-3 text-muted d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                        <i class="fa-solid fa-network-wired fa-3x"></i>
+                    </div>
+                    
+                    <h4 class="text-dark fw-bold mb-2">Awaiting Parameters Input</h4>
+                    <p class="text-muted px-4 mb-0">
+                        Submit sensor parameters via the form to execute machine failure classification using the optimal model weights.
+                    </p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
