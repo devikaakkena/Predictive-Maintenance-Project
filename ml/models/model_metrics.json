@@ -1,0 +1,18 @@
+{
+    "Logistic Regression": {
+        "accuracy": 0.9685,
+        "f1_score": 0.2222222222222222
+    },
+    "Decision Tree": {
+        "accuracy": 0.978,
+        "f1_score": 0.6666666666666666
+    },
+    "Random Forest": {
+        "accuracy": 0.985,
+        "f1_score": 0.7413793103448276
+    },
+    "Random Forest (Tuned)": {
+        "accuracy": 0.9855,
+        "f1_score": 0.7563025210084033
+    }
+}

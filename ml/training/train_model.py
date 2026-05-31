@@ -1,152 +1,83 @@
-# ==============================
-# IMPORT LIBRARIES
-# ==============================
 import pandas as pd
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import accuracy_score
-import joblib
-import os
-import matplotlib
-matplotlib.use('Agg')
-import matplotlib.pyplot as plt
-import seaborn as sns
+import logging
+import shutil
+from pathlib import Path
 
+# Absolute imports from training packages
+from ml.training.compare_models import compare_multiple_models, select_best_model
+from ml.training.hyperparameter_tuning import tune_random_forest
+from ml.training.save_model import save_best_model_and_metadata
 
-# ==============================
-# CONFIGURATION
-# ==============================
-DATA_PATH = "ml/data/raw/ai4i.csv"
-MODEL_PATH = "ml/models/trained_model.pkl"
+# Configure logging module
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+logger = logging.getLogger(__name__)
 
-FEATURE_COLUMNS = [
-    'Air temperature [K]',
-    'Process temperature [K]',
-    'Rotational speed [rpm]',
-    'Torque [Nm]',
-    'Tool wear [min]'
-]
+# Resolve absolute paths
+BASE_DIR = Path(__file__).resolve().parents[2]
+PROCESSED_DIR = BASE_DIR / "ml" / "data" / "processed"
+MODELS_DIR = BASE_DIR / "ml" / "models"
 
-TARGET_COLUMN = 'Machine failure'
+def execute_model_training_pipeline() -> None:
+    """
+    Executes the entire modular machine learning model training pipeline.
+    
+    1. Loads intermediate preprocessed splits from processed directory
+    2. Trains and compares Logistic Regression, Decision Tree, Random Forest, and XGBoost
+    3. Automatically selects the optimal classifier based on F1 validation performance
+    4. Automatically runs hyperparameter tuning on Random Forest if it is the best
+    5. Saves best model weights, JSON performance profiles, and a comparisons report
+    6. Ensures backend Flask app compatibility by linking/copying best_model.pkl to trained_model.pkl
+    """
+    logger.info("Executing Predictive Maintenance Model Training Pipeline...")
+    
+    # 1. Check splits existence
+    if not (PROCESSED_DIR / "X_train.csv").exists():
+        logger.error(f"Processed splits not found in: {PROCESSED_DIR}. Run preprocessing pipeline first.")
+        raise FileNotFoundError(f"Processed splits missing in {PROCESSED_DIR}")
+        
+    # 2. Load dataset splits
+    logger.info("Loading preprocessed training splits from disk...")
+    X_train = pd.read_csv(PROCESSED_DIR / "X_train.csv")
+    X_test = pd.read_csv(PROCESSED_DIR / "X_test.csv")
+    y_train = pd.read_csv(PROCESSED_DIR / "y_train.csv").values.ravel()
+    y_test = pd.read_csv(PROCESSED_DIR / "y_test.csv").values.ravel()
+    
+    # 3. Train and compare models
+    fitted_models, metrics = compare_multiple_models(X_train, y_train, X_test, y_test)
+    
+    # 4. Select best model
+    best_name = select_best_model(metrics)
+    best_model = fitted_models[best_name]
+    
+    # 5. Grid Search Tuning if Random Forest is selected
+    if best_name == "Random Forest":
+        tuned_model = tune_random_forest(X_train, y_train)
+        
+        # Fit and update metrics
+        tuned_model.fit(X_train, y_train)
+        y_pred = tuned_model.predict(X_test)
+        
+        from sklearn.metrics import accuracy_score, f1_score
+        acc = accuracy_score(y_test, y_pred)
+        f1 = f1_score(y_test, y_pred, average="binary")
+        
+        metrics["Random Forest (Tuned)"] = {
+            "accuracy": float(acc),
+            "f1_score": float(f1)
+        }
+        best_model = tuned_model
+        best_name = "Random Forest (Tuned)"
+        logger.info(f"Tuned Random Forest Validation Accuracy: {acc*100:.2f}%, F1-Score: {f1:.4f}")
+        
+    # 6. Save model weight pickles and metrics metadata
+    save_best_model_and_metadata(best_model, best_name, metrics)
+    
+    # 7. Maintain Backend Flask application compatibility
+    trained_model_path = MODELS_DIR / "trained_model.pkl"
+    shutil.copy(MODELS_DIR / "best_model.pkl", trained_model_path)
+    logger.info(f"Successfully cloned best_model.pkl to {trained_model_path} for backward backend compatibility.")
 
-
-# ==============================
-# LOAD DATA
-# ==============================
-def load_data(path):
-    data = pd.read_csv(path)
-    print("✅ Data loaded successfully")
-    return data
-
-
-# ==============================
-# PREPROCESS DATA
-# ==============================
-def preprocess_data(data):
-    data = data.drop(['UDI', 'Product ID', 'Type'], axis=1)
-
-    X = data[FEATURE_COLUMNS]
-    y = data[TARGET_COLUMN]
-
-    print("✅ Data preprocessing completed")
-    return X, y
-
-
-# ==============================
-# TRAIN MODEL
-# ==============================
-def train_model(X, y):
-    model = RandomForestClassifier(n_estimators=100, random_state=42)
-    model.fit(X, y)
-    print("✅ Model training completed")
-    return model
-
-
-# ==============================
-# SAVE MODEL
-# ==============================
-def save_model(model, path):
-    os.makedirs(os.path.dirname(path), exist_ok=True)
-    joblib.dump(model, path)
-    print(f"✅ Model saved at: {path}")
-
-
-# ==============================
-# MAIN FUNCTION
-# ==============================
-def main():
-    print("🚀 Training Started...\n")
-
-    data = load_data(DATA_PATH)
-    X, y = preprocess_data(data)
-
-    model = train_model(X, y)
-
-    # ==============================
-    # GRAPH 1: FEATURE IMPORTANCE
-    # ==============================
-    print("\n📊 Feature Importance Graph")
-
-    importances = model.feature_importances_
-
-    plt.figure()
-    plt.barh(FEATURE_COLUMNS, importances)
-    plt.title("Feature Importance")
-    plt.xlabel("Importance")
-    plt.ylabel("Features")
-    plt.tight_layout()
-    plt.savefig("ml/analysis/feature_importance.png")
-    plt.savefig("backend/app/static/graphs/feature_importance.png")
-    plt.show()
-
-    # ==============================
-    # GRAPH 2: FAILURE vs SAFE COUNT
-    # ==============================
-    print("\n📊 Failure vs Safe Count")
-
-    y_pred = model.predict(X)
-
-    counts = pd.Series(y_pred).value_counts()
-
-    plt.figure()
-    counts.plot(kind='bar', color=['green', 'red'])
-    plt.title("Safe vs Failure Count")
-    plt.xticks([0, 1], ["Safe", "Failure"], rotation=0)
-    plt.xlabel("Class")
-    plt.ylabel("Count")
-    plt.tight_layout()
-    plt.savefig("ml/analysis/failure_vs_safe.png")
-    plt.savefig("backend/app/static/graphs/failure_vs_safe.png")
-    plt.show()
-
-    # ==============================
-    # GRAPH 3: CORRELATION HEATMAP
-    # ==============================
-    print("\n📊 Correlation Heatmap")
-
-    plt.figure(figsize=(8, 6))
-    sns.heatmap(data.corr(numeric_only=True), annot=True, cmap='coolwarm')
-    plt.title("Correlation Heatmap")
-    plt.tight_layout()
-    plt.savefig("ml/analysis/correlation_heatmap.png")
-    plt.savefig("backend/app/static/graphs/correlation_heatmap.png")
-    plt.show()
-
-    # ==============================
-    # ACCURACY
-    # ==============================
-    accuracy = accuracy_score(y, y_pred)
-    print(f"\n✅ Model Accuracy: {accuracy * 100:.2f}%")
-
-    # ==============================
-    # SAVE MODEL
-    # ==============================
-    save_model(model, MODEL_PATH)
-
-    print("\n🎉 Training Completed Successfully!")
-
-
-# ==============================
-# RUN PROGRAM
-# ==============================
 if __name__ == "__main__":
-    main()
+    logger.info("--- Standalone Model Training Pipeline Started ---")
+    execute_model_training_pipeline()
+    logger.info("--- Standalone Model Training Pipeline Completed Successfully ---")
