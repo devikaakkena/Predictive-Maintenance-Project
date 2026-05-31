@@ -1,0 +1,49 @@
+# ==========================================
+# PYTHON CACHES AND SYSTEM FILES
+# ==========================================
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.ipynb_checkpoints/
+.pytest_cache/
+.DS_Store
+Thumbs.db
+
+# ==========================================
+# ENVIRONMENTS AND DEPENDENCIES
+# ==========================================
+venv/
+.env
+.venv/
+env/
+ENV/
+dist/
+build/
+*.egg-info/
+
+# ==========================================
+# IDE AND WORKSPACE SETTINGS
+# ==========================================
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+
+# ==========================================
+# MACHINE LEARNING DATAS AND OUTPUTS
+# ==========================================
+# Exclude model weights if they are too large
+# ml/models/*.pkl
+
+# Exclude generated graphics and logs
+*.log
+outputs/logs/
+outputs/graphs/
+outputs/predictions/
+outputs/reports/
+backend/app/static/graphs/*.png
+ml/analysis/*.png
