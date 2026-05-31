@@ -16,6 +16,76 @@
     </div>
 </div>
 
+<!-- LIVE Industrial Telemetry Stream Section -->
+<div class="card card-custom border-primary border-opacity-25 mb-4 bg-white shadow-sm">
+    <div class="card-header card-header-custom d-flex justify-content-between align-items-center bg-light bg-opacity-50">
+        <span class="fs-6 fw-bold text-primary">
+            <i class="fa-solid fa-satellite-dish fa-fade me-2 text-danger"></i>LIVE Industrial Telemetry Stream Simulation
+        </span>
+        <div class="d-flex align-items-center gap-3">
+            <span class="badge bg-secondary py-1.5 px-3 rounded-pill text-uppercase" id="liveModeBadge">Offline</span>
+            <button class="btn btn-primary btn-sm rounded shadow-sm px-3 py-1.5 fw-semibold" id="toggleSimBtn">
+                <i class="fa-solid fa-play me-1"></i>Start Simulation Stream
+            </button>
+        </div>
+    </div>
+    <div class="card-body p-4">
+        <div class="row g-4 align-items-center">
+            <!-- Sensor parameters lists -->
+            <div class="col-lg-8 border-end">
+                <div class="row g-3 row-cols-md-5 row-cols-2 text-center">
+                    <div class="col">
+                        <div class="bg-light p-3 rounded">
+                            <span class="text-uppercase text-muted fw-bold d-block mb-1" style="font-size: 0.72em;">Air Temp</span>
+                            <h4 class="mb-0 text-dark fw-bold fs-5" id="liveAirTemp">--- K</h4>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="bg-light p-3 rounded">
+                            <span class="text-uppercase text-muted fw-bold d-block mb-1" style="font-size: 0.72em;">Process Temp</span>
+                            <h4 class="mb-0 text-dark fw-bold fs-5" id="liveProcTemp">--- K</h4>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="bg-light p-3 rounded">
+                            <span class="text-uppercase text-muted fw-bold d-block mb-1" style="font-size: 0.72em;">Speed (RPM)</span>
+                            <h4 class="mb-0 text-dark fw-bold fs-5" id="liveSpeed">--- rpm</h4>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="bg-light p-3 rounded">
+                            <span class="text-uppercase text-muted fw-bold d-block mb-1" style="font-size: 0.72em;">Torque</span>
+                            <h4 class="mb-0 text-dark fw-bold fs-5" id="liveTorque">--- Nm</h4>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="bg-light p-3 rounded">
+                            <span class="text-uppercase text-muted fw-bold d-block mb-1" style="font-size: 0.72em;">Tool Wear</span>
+                            <h4 class="mb-0 text-dark fw-bold fs-5" id="liveToolWear">--- min</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Classification and Status Indicator -->
+            <div class="col-lg-4 text-center">
+                <div class="d-flex flex-column align-items-center justify-content-center">
+                    <div class="mb-2">
+                        <span class="text-uppercase text-muted fw-bold d-block" style="font-size: 0.8em; tracking-wider: 1px;">Machine Health Status</span>
+                    </div>
+                    <div class="mb-3">
+                        <span class="fs-5 fw-bold px-4 py-2 rounded-pill d-inline-block border shadow-sm" id="liveStatusBadge" style="background-color: #e2e8f0; color: #475569;">
+                            <i class="fa-solid fa-power-off me-2"></i>STANDBY
+                        </span>
+                    </div>
+                    <div class="alert alert-secondary py-2 px-3 m-0 d-inline-block shadow-sm" id="liveAlertBox" style="font-size: 0.82em; width: 90%;">
+                        <i class="fa-solid fa-circle-info text-primary me-2"></i>Telemetry stream currently paused.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- TOP SECTION: Metric Cards -->
 <div class="row g-4 mb-4">
     <div class="col-xl-3 col-md-6">
@@ -88,4 +158,5 @@
 {% block scripts %}
 <script src="{{ url_for('static', filename='js/charts.js') }}"></script>
 <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+<script src="{{ url_for('static', filename='js/live_dashboard.js') }}"></script>
 {% endblock %}
