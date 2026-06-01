@@ -161,8 +161,8 @@ document.addEventListener("DOMContentLoaded", function() {
             liveAlertBox.innerHTML = '<i class="fa-solid fa-circle-info text-primary me-2"></i>Telemetry stream currently paused.';
 
             if (liveStatusPulseBadge) {
-                liveStatusPulseBadge.className = "badge bg-secondary rounded-pill px-2.5 py-1 text-uppercase fw-semibold ms-2";
-                liveStatusPulseBadge.innerHTML = '<i class="fa-solid fa-circle me-1.5 fs-9"></i>OFFLINE';
+                liveStatusPulseBadge.className = "badge bg-secondary rounded-pill px-2.5 py-1 text-uppercase fw-semibold ms-2 d-inline-flex align-items-center";
+                liveStatusPulseBadge.innerHTML = '<i class="fa-solid fa-circle me-2" style="font-size: 8px;"></i>OFFLINE';
             }
         } else {
             // Start streaming
@@ -175,10 +175,10 @@ document.addEventListener("DOMContentLoaded", function() {
             
             liveModeBadge.className = "badge bg-success py-1.5 px-3 rounded-pill text-uppercase text-white";
             liveModeBadge.textContent = "Streaming";
-
+ 
             if (liveStatusPulseBadge) {
-                liveStatusPulseBadge.className = "badge bg-success pulse-live-badge rounded-pill px-2.5 py-1 text-uppercase fw-semibold ms-2";
-                liveStatusPulseBadge.innerHTML = '<i class="fa-solid fa-circle me-1.5 fs-9"></i>LIVE';
+                liveStatusPulseBadge.className = "badge bg-success pulse-live-badge rounded-pill px-2.5 py-1 text-uppercase fw-semibold ms-2 d-inline-flex align-items-center";
+                liveStatusPulseBadge.innerHTML = '<i class="fa-solid fa-circle me-2" style="font-size: 8px;"></i>LIVE';
             }
         }
     });

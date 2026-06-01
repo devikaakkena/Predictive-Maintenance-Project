@@ -54,30 +54,19 @@ class SimulationService:
             torque = round(random.uniform(62.0, 78.0), 1)
             speed = round(random.uniform(980.0, 1150.0), 1)
             
-        # 4. Execute Real-Time Machine Learning Inference!
+        # 4. Execute Real-Time Machine Learning Inference & Dynamic DB Persistence!
         features = [air_temp, process_temp, speed, torque, tool_wear]
-        prediction = self.prediction_service.predict_single(features)
+        pred_detail = self.prediction_service.predict_single_detailed(features)
         
-        # 5. Map prediction to status badges (Healthy, Warning, Critical)
+        prediction = pred_detail["result"]
+        db_status = pred_detail["status"]
+        
+        # Map DB status (SAFE, WARNING, CRITICAL) to simulation status (Healthy, Warning, Critical) for JS client
         status = "Healthy"
-        if "Failure" in prediction:
+        if db_status == "CRITICAL":
             status = "Critical"
-        elif tool_wear > 175.0 or torque > 50.0:
+        elif db_status == "WARNING":
             status = "Warning"
-            
-        # 6. Save persistently to SQLite database (Step 10 persistence)
-        try:
-            from backend.app.services.database_service import DatabaseService
-            db_status = "CRITICAL" if status == "Critical" else ("WARNING" if status == "Warning" else "SAFE")
-            confidence = 99.0 if db_status == "CRITICAL" else (85.0 if db_status == "WARNING" else 95.0)
-            DatabaseService.save_prediction(
-                features=features,
-                prediction=prediction,
-                confidence_score=confidence,
-                machine_status=db_status
-            )
-        except Exception as db_err:
-            simulation_logger.error(f"Failed to persist simulated telemetry prediction in SQLite: {str(db_err)}")
             
         return {
             "air_temp": air_temp,

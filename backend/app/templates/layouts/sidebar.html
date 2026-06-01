@@ -1,30 +1,41 @@
 <nav id="sidebar">
+    <!-- Floating Arrow button on the right edge of sidebar (visible on desktop only) -->
+    <button type="button" id="sidebarCollapseDesktop" class="btn p-0 d-none d-md-flex align-items-center justify-content-center" aria-label="Toggle Sidebar">
+        <i class="fa-solid fa-chevron-left" id="collapseArrow"></i>
+    </button>
+
     <div class="sidebar-header">
-        <h5 class="m-0 text-white">
-            <i class="fa-solid fa-circle-nodes text-primary me-2"></i>PredMaint Engine
+        <h5 class="m-0 text-dark d-flex align-items-center">
+            <i class="fa-solid fa-circle-nodes text-primary me-2 flex-shrink-0"></i>
+            <span class="logo-text">PredMaint Engine</span>
         </h5>
     </div>
     
     <ul class="list-unstyled components">
         <li class="{% if request.endpoint == 'dashboard.home' %}active{% endif %}">
             <a href="{{ url_for('dashboard.home') }}">
-                <i class="fa-solid fa-table-columns"></i>Dashboard
+                <i class="fa-solid fa-table-columns"></i>
+                <span class="link-text">Dashboard</span>
             </a>
         </li>
         <li class="{% if request.endpoint == 'analysis.index' %}active{% endif %}">
             <a href="{{ url_for('analysis.index') }}">
-                <i class="fa-solid fa-chart-line"></i>Analytics
+                <i class="fa-solid fa-chart-line"></i>
+                <span class="link-text">Analytics</span>
             </a>
         </li>
         <li class="{% if request.endpoint == 'prediction.predict_view' %}active{% endif %}">
             <a href="{{ url_for('prediction.predict_view') }}">
-                <i class="fa-solid fa-microchip"></i>Predictions
+                <i class="fa-solid fa-microchip"></i>
+                <span class="link-text">Predictions</span>
             </a>
         </li>
     </ul>
     
-    <div class="p-4 border-top border-secondary text-center text-muted" style="font-size: 0.8em; background-color: #0f172a;">
-        <span class="d-block text-uppercase tracking-wider">Model Status</span>
-        <span class="badge bg-success mt-2 px-2 py-1"><i class="fa-solid fa-circle-check me-1"></i>Active</span>
+    <div class="sidebar-status-panel p-4 text-center text-muted border-top border-light-subtle">
+        <span class="d-block text-uppercase tracking-wider logo-text" style="font-size: 0.85em;">Model Status</span>
+        <span class="badge bg-success mt-2 px-2 py-1" id="sidebarStatusBadge">
+            <i class="fa-solid fa-circle-check me-1"></i><span class="logo-text">Active</span>
+        </span>
     </div>
 </nav>

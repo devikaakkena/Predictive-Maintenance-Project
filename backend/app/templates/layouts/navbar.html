@@ -1,5 +1,10 @@
 <nav class="navbar navbar-expand-lg navbar-custom">
     <div class="container-fluid p-0">
+        <!-- Sidebar Toggle Hamburger Button (visible on mobile only) -->
+        <button type="button" id="sidebarCollapse" class="btn btn-link text-dark p-0 me-3 shadow-none border-0 d-md-none align-items-center justify-content-center" aria-label="Toggle Navigation">
+            <i class="fa-solid fa-bars fs-4"></i>
+        </button>
+
         <span class="navbar-brand mb-0 h1 text-secondary fs-5">
             <i class="fa-solid fa-gears me-2 text-primary"></i>Enterprise Operations Interface
         </span>
@@ -8,14 +13,34 @@
             <span class="me-3 d-none d-md-inline text-muted" style="font-size: 0.9em;">
                 <i class="fa-solid fa-clock me-1 text-primary"></i>System Live: <strong>Active</strong>
             </span>
-            <div class="dropdown">
-                <button class="btn btn-outline-secondary dropdown-toggle btn-sm rounded-pill px-3" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    <i class="fa-solid fa-user-gear text-primary me-1"></i>SysAdmin
+            
+            <!-- Circular Theme Selector Dropdown -->
+            <div class="dropdown me-3">
+                <button class="btn btn-link text-secondary p-0 border-0 shadow-none d-flex align-items-center justify-content-center" type="button" id="themeSelectorDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="width: 32px; height: 32px; border-radius: 50%; background-color: var(--bg-sidebar-status); border: 1px solid var(--border-color) !important;" aria-label="Select Theme">
+                    <i class="fa-solid fa-sun text-warning fs-6" id="themeActiveIcon"></i>
                 </button>
-                <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
-                    <li><a class="dropdown-item py-2 text-secondary" href="#"><i class="fa-solid fa-sliders me-2"></i>Settings</a></li>
-                    <li><a class="dropdown-item py-2 text-secondary" href="#"><i class="fa-solid fa-shield-halved me-2"></i>Security</a></li>
+                <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 py-1" aria-labelledby="themeSelectorDropdown" style="background-color: var(--bg-card); border: 1px solid var(--border-color) !important; min-width: 130px; z-index: 1060;">
+                    <li>
+                        <button type="button" class="dropdown-item py-2 d-flex align-items-center text-secondary fw-semibold" data-theme-value="light" style="font-size: 0.9em;">
+                            <i class="fa-solid fa-sun me-2 text-warning fs-6"></i>Light
+                        </button>
+                    </li>
+                    <li>
+                        <button type="button" class="dropdown-item py-2 d-flex align-items-center text-secondary fw-semibold" data-theme-value="dark" style="font-size: 0.9em;">
+                            <i class="fa-solid fa-moon me-2 text-info fs-6"></i>Dark
+                        </button>
+                    </li>
+                    <li>
+                        <button type="button" class="dropdown-item py-2 d-flex align-items-center text-secondary fw-semibold" data-theme-value="system" style="font-size: 0.9em;">
+                            <i class="fa-solid fa-desktop me-2 text-primary fs-6"></i>System
+                        </button>
+                    </li>
                 </ul>
+            </div>
+
+            <!-- Profile Badge Pill -->
+            <div class="d-flex align-items-center border rounded-pill px-3 py-1 text-secondary" style="font-size: 0.95em; background-color: var(--bg-sidebar-status);">
+                <i class="fa-solid fa-user-gear text-primary me-2"></i><strong>SysAdmin</strong>
             </div>
         </div>
     </div>

@@ -12,111 +12,429 @@
     
     <!-- Premium UI Theme Styles -->
     <style>
+        :root, [data-theme="light"] {
+            --bg-body: #f3f4f6;
+            --bg-card: #ffffff;
+            --bg-sidebar: #ffffff;
+            --bg-sidebar-header: #ffffff;
+            --bg-sidebar-status: #f8fafc;
+            --border-color: #e2e8f0;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --text-sidebar-link: #475569;
+            --bg-sidebar-hover: #f1f5f9;
+            --bg-navbar: #ffffff;
+            --bg-card-header: #ffffff;
+            --bg-card-header-subtle: #f8fafc;
+            --bg-card-body-subtle: #f8fafc;
+            --text-brand: #0f172a;
+            --border-subtle: #f1f5f9;
+            --table-row-hover: #f8fafc;
+            --table-row-bg: #ffffff;
+            --table-row-bg-striped: #f8fafc;
+        }
+        
+        [data-theme="dark"] {
+            --bg-body: #090d16;
+            --bg-card: #131b2e;
+            --bg-sidebar: #131b2e;
+            --bg-sidebar-header: #0b111e;
+            --bg-sidebar-status: #0b111e;
+            --border-color: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --text-sidebar-link: #cbd5e1;
+            --bg-sidebar-hover: #1e293b;
+            --bg-navbar: #131b2e;
+            --bg-card-header: #131b2e;
+            --bg-card-header-subtle: #0b111e;
+            --bg-card-body-subtle: #0b111e;
+            --text-brand: #ffffff;
+            --border-subtle: #1e293b;
+            --table-row-hover: #1e293b;
+            --table-row-bg: #131b2e;
+            --table-row-bg-striped: #0f172a;
+        }
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f3f4f6;
+            background-color: var(--bg-body);
+            color: var(--text-main);
             overflow-x: hidden;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
         .wrapper {
             display: flex;
             width: 100%;
             align-items: stretch;
         }
+        
+        /* Sidebar Layout - Stable (Fixed in place) and Collapsible */
         #sidebar {
+            width: 260px;
             min-width: 260px;
             max-width: 260px;
-            background: #1e293b;
-            color: #f8fafc;
-            transition: all 0.3s;
-            min-height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            z-index: 1040;
+            background: var(--bg-sidebar);
+            color: var(--text-main);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.3s ease, border-color 0.3s ease;
             display: flex;
             flex-direction: column;
-            box-shadow: 4px 0 10px rgba(0,0,0,0.05);
+            border-right: 1px solid var(--border-color);
+            box-shadow: 2px 0 10px rgba(0,0,0,0.02);
         }
+        
         #sidebar .sidebar-header {
-            padding: 24px;
-            background: #0f172a;
-            border-bottom: 1px solid #334155;
+            padding: 20px 24px;
+            background: var(--bg-sidebar-header);
+            border-bottom: 1px solid var(--border-color);
+            height: 70px;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.3s ease, border-color 0.3s ease;
         }
+        
+        #sidebar .sidebar-header h5 {
+            color: var(--text-brand) !important;
+        }
+        
         #sidebar ul.components {
-            padding: 20px 0;
+            padding: 15px 0;
             flex-grow: 1;
         }
+        
         #sidebar ul li a {
             padding: 12px 24px;
             font-size: 1.05em;
             display: flex;
             align-items: center;
-            color: #94a3b8;
+            color: var(--text-sidebar-link);
             text-decoration: none;
-            transition: all 0.2s;
+            transition: all 0.2s ease, background-color 0.3s ease;
             border-left: 4px solid transparent;
+            white-space: nowrap;
         }
+        
         #sidebar ul li a i {
-            margin-right: 12px;
-            font-size: 1.1em;
+            margin-right: 14px;
+            font-size: 1.15em;
             width: 20px;
             text-align: center;
+            color: var(--text-muted);
+            transition: margin 0.3s ease;
         }
+        
         #sidebar ul li a:hover {
-            color: #f8fafc;
-            background: #334155;
-            border-left-color: #64748b;
+            color: var(--text-brand);
+            background: var(--bg-sidebar-hover);
+            border-left-color: var(--text-muted);
         }
+        
         #sidebar ul li.active > a {
-            color: #f8fafc;
+            color: #ffffff !important;
             background: #3b82f6;
             border-left-color: #2563eb;
             font-weight: 600;
         }
+        
+        #sidebar ul li.active > a i {
+            color: #ffffff !important;
+        }
+        
+        .sidebar-status-panel {
+            background-color: var(--bg-sidebar-status);
+            border-top: 1px solid var(--border-color);
+            transition: all 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
+        }
+        
+        /* Floating Arrow Collapse Button on Edge */
+        #sidebarCollapseDesktop {
+            position: absolute;
+            top: 92px; /* Vertically aligned near the top items */
+            right: -12px; /* Half overlapping: width is 24px, right is -12px */
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background-color: var(--bg-card) !important;
+            border: 1px solid var(--border-color) !important;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+            z-index: 1050;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out, background-color 0.3s ease, border-color 0.3s ease;
+            outline: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        #sidebarCollapseDesktop:hover {
+            background-color: var(--bg-sidebar-hover) !important;
+            transform: scale(1.1);
+            box-shadow: 0 3px 6px rgba(0,0,0,0.12);
+        }
+        
+        #sidebarCollapseDesktop i {
+            font-size: 0.75em;
+            color: var(--text-muted);
+            transition: transform 0.2s ease;
+        }
+        
+        /* Collapsed Sidebar State (Desktop) */
+        #sidebar.collapsed {
+            width: 70px;
+            min-width: 70px;
+            max-width: 70px;
+        }
+        
+        #sidebar.collapsed .logo-text,
+        #sidebar.collapsed .link-text,
+        #sidebar.collapsed .sidebar-status-panel .logo-text {
+            display: none;
+        }
+        
+        #sidebar.collapsed .sidebar-header {
+            padding: 20px 0;
+            justify-content: center;
+        }
+        
+        #sidebar.collapsed ul li a {
+            padding: 14px 0;
+            justify-content: center;
+        }
+        
+        #sidebar.collapsed ul li a i {
+            margin-right: 0;
+            font-size: 1.25em;
+        }
+        
+        #sidebar.collapsed .sidebar-status-panel {
+            padding: 15px 0 !important;
+        }
+        
+        /* Content area adjustments */
         #content {
-            width: 100%;
-            padding: 0;
+            width: calc(100% - 260px);
+            margin-left: 260px;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background-color: var(--bg-body);
         }
+        
+        #content.expanded {
+            width: calc(100% - 70px);
+            margin-left: 70px;
+        }
+        
         .navbar-custom {
-            background-color: #ffffff;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-            border-bottom: 1px solid #e2e8f0;
+            background-color: var(--bg-navbar);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.01);
+            border-bottom: 1px solid var(--border-color);
             padding: 16px 24px;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
         }
+        
+        .navbar-brand {
+            color: var(--text-main) !important;
+        }
+        
         .main-container {
             padding: 30px;
             flex-grow: 1;
         }
+        
         .footer-custom {
-            background-color: #ffffff;
-            border-top: 1px solid #e2e8f0;
+            background-color: var(--bg-navbar);
+            border-top: 1px solid var(--border-color);
             padding: 16px 30px;
-            color: #64748b;
+            color: var(--text-muted);
             font-size: 0.9em;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+        
+        /* Backdrop for Mobile Sidebar */
+        .sidebar-backdrop {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(9, 13, 22, 0.5);
+            backdrop-filter: blur(2px);
+            z-index: 1030;
+            transition: opacity 0.3s ease;
+        }
+        
+        .sidebar-backdrop.show {
+            display: block;
         }
         
         /* Modern Card Tweaks */
         .card-custom {
-            border: 1px solid #e2e8f0;
+            border: 1px solid var(--border-color);
             border-radius: 12px;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02), 0 2px 4px -1px rgba(0,0,0,0.02);
-            transition: all 0.2s ease-in-out;
-            background: #ffffff;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.01), 0 2px 4px -1px rgba(0,0,0,0.01);
+            transition: all 0.2s ease-in-out, background-color 0.3s ease, border-color 0.3s ease;
+            background: var(--bg-card);
         }
         .card-custom:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.04), 0 4px 6px -2px rgba(0,0,0,0.03);
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.03), 0 4px 6px -2px rgba(0,0,0,0.02);
         }
         .card-header-custom {
             background-color: transparent;
-            border-bottom: 1px solid #f1f5f9;
+            border-bottom: 1px solid var(--border-color);
             padding: 18px 24px;
             font-weight: 600;
-            color: #1e293b;
+            color: var(--text-main) !important;
+            transition: border-color 0.3s ease;
+        }
+        
+        /* Table Header and Data Alignment Tweaks */
+        .table th, .table td {
+            text-align: center !important;
+            vertical-align: middle !important;
+            color: var(--text-main) !important;
+            border-color: var(--border-color) !important;
+            background-color: transparent !important;
+        }
+        
+        .table {
+            --bs-table-color: var(--text-main);
+            --bs-table-bg: var(--bg-card);
+            --bs-table-hover-bg: var(--bg-sidebar-hover);
+            --bs-table-striped-bg: var(--bg-sidebar-status);
+            border-color: var(--border-color) !important;
+            background-color: var(--bg-card) !important;
+        }
+        
+        /* Bootstrap Dropdown overrides for theme support */
+        .dropdown-item {
+            color: var(--text-sidebar-link) !important;
+            transition: background-color 0.15s ease, color 0.15s ease;
+        }
+        
+        .dropdown-item:hover {
+            background-color: var(--bg-sidebar-hover) !important;
+            color: var(--text-brand) !important;
+        }
+        
+        /* Dark Theme custom overrides */
+        .text-dark {
+            color: var(--text-main) !important;
+        }
+        
+        [data-theme="dark"] .table-light {
+            --bs-table-bg: var(--bg-sidebar-status) !important;
+            --bs-table-color: var(--text-main) !important;
+            background-color: var(--bg-sidebar-status) !important;
+            color: var(--text-main) !important;
+        }
+        
+        .text-muted {
+            color: var(--text-muted) !important;
+        }
+        
+        .bg-light {
+            background-color: var(--bg-sidebar-status) !important;
+        }
+        
+        .border-light-subtle {
+            border-color: var(--border-color) !important;
+        }
+        
+        .border {
+            border-color: var(--border-color) !important;
+        }
+        
+        /* Alerts adjustments in dark theme */
+        .alert-secondary {
+            background-color: var(--bg-sidebar-status) !important;
+            border-color: var(--border-color) !important;
+            color: var(--text-main) !important;
+        }
+        
+        /* Custom scrollbar matching dark/light themes */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-body);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--text-muted);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-sidebar-link);
+        }
+
+        /* Dark Mode overrides for white backgrounds and forms */
+        [data-theme="dark"] .bg-white {
+            background-color: var(--bg-card) !important;
+            color: var(--text-main) !important;
+        }
+        [data-theme="dark"] .btn-outline-secondary {
+            border-color: var(--border-color) !important;
+            color: var(--text-main) !important;
+        }
+        [data-theme="dark"] .btn-outline-secondary:hover {
+            background-color: var(--bg-sidebar-hover) !important;
+            color: var(--text-brand) !important;
+        }
+
+        /* Form Controls support in Dark Theme */
+        [data-theme="dark"] .form-control,
+        [data-theme="dark"] .form-select {
+            background-color: var(--bg-sidebar-status) !important;
+            border-color: var(--border-color) !important;
+            color: var(--text-main) !important;
+        }
+        [data-theme="dark"] .form-control:focus,
+        [data-theme="dark"] .form-select:focus {
+            background-color: var(--bg-sidebar-hover) !important;
+            border-color: #3b82f6 !important;
+            box-shadow: 0 0 0 0.25rem rgba(59, 130, 246, 0.25) !important;
+        }
+        [data-theme="dark"] .form-control::placeholder {
+            color: var(--text-muted) !important;
+        }
+        
+        /* Responsive Rules */
+        @media (max-width: 767.98px) {
+            #sidebar {
+                left: -260px;
+                box-shadow: none;
+            }
+            
+            #sidebar.show-sidebar {
+                left: 0;
+                box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15);
+            }
+            
+            #content,
+            #content.expanded {
+                width: 100%;
+                margin-left: 0;
+            }
         }
     </style>
     {% block styles %}{% endblock %}
 </head>
 <body>
+    <!-- Sidebar backdrop for mobile view overlay -->
+    <div id="sidebarBackdrop" class="sidebar-backdrop"></div>
+
     <div class="wrapper">
         <!-- Sidebar Component Include -->
         {% include 'layouts/sidebar.html' %}
@@ -139,6 +457,129 @@
     
     <!-- Bootstrap 5 Bundle with Popper JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Responsive Collapsible Layout JS State Machine & Premium Theme Switcher -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const sidebar = document.getElementById("sidebar");
+            const content = document.getElementById("content");
+            const toggleButtonMobile = document.getElementById("sidebarCollapse"); // 3-line hamburger in navbar
+            const toggleButtonDesktop = document.getElementById("sidebarCollapseDesktop"); // arrow inside sidebar
+            const backdrop = document.getElementById("sidebarBackdrop");
+            const collapseArrow = document.getElementById("collapseArrow");
+            
+            // Helper to update arrow icon direction on desktop
+            function updateArrowIcon(isCollapsed) {
+                if (collapseArrow) {
+                    if (isCollapsed) {
+                        collapseArrow.classList.remove("fa-chevron-left");
+                        collapseArrow.classList.add("fa-chevron-right");
+                    } else {
+                        collapseArrow.classList.remove("fa-chevron-right");
+                        collapseArrow.classList.add("fa-chevron-left");
+                    }
+                }
+            }
+            
+            // Check desktop collapsed state in localStorage on initial boot
+            if (window.innerWidth >= 768) {
+                const isCollapsed = localStorage.getItem("sidebarCollapsed") === "true";
+                if (isCollapsed) {
+                    sidebar.classList.add("collapsed");
+                    content.classList.add("expanded");
+                    updateArrowIcon(true);
+                }
+            }
+            
+            // Desktop toggle click (arrow button)
+            if (toggleButtonDesktop) {
+                toggleButtonDesktop.addEventListener("click", function(e) {
+                    e.stopPropagation();
+                    const willCollapse = !sidebar.classList.contains("collapsed");
+                    sidebar.classList.toggle("collapsed");
+                    content.classList.toggle("expanded");
+                    updateArrowIcon(willCollapse);
+                    localStorage.setItem("sidebarCollapsed", willCollapse);
+                });
+            }
+            
+            // Mobile toggle click (hamburger menu 3-lines in navbar)
+            if (toggleButtonMobile) {
+                toggleButtonMobile.addEventListener("click", function(e) {
+                    e.stopPropagation();
+                    sidebar.classList.toggle("show-sidebar");
+                    backdrop.classList.toggle("show");
+                });
+            }
+            
+            // Close sidebar when clicking backdrop on mobile
+            backdrop.addEventListener("click", function() {
+                sidebar.classList.remove("show-sidebar");
+                backdrop.classList.remove("show");
+            });
+            
+            // Close sidebar when clicking any nav link on mobile (helps transition UX)
+            const navLinks = sidebar.querySelectorAll("ul.components li a");
+            navLinks.forEach(link => {
+                link.addEventListener("click", function() {
+                    if (window.innerWidth < 768) {
+                        sidebar.classList.remove("show-sidebar");
+                        backdrop.classList.remove("show");
+                    }
+                });
+            });
+
+            // ==========================================
+            // GLOBAL THEME CONTROLLER & SCHEME SCHEDULER
+            // ==========================================
+            const themeActiveIcon = document.getElementById("themeActiveIcon");
+            
+            // Icon mappings for active theme selection button
+            const themeIcons = {
+                light: "fa-sun text-warning",
+                dark: "fa-moon text-info",
+                system: "fa-desktop text-primary"
+            };
+
+            function applyTheme(themeValue) {
+                let actualTheme = themeValue;
+                if (themeValue === "system") {
+                    const isSystemDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+                    actualTheme = isSystemDark ? "dark" : "light";
+                }
+                
+                // Set dataset attribute on html document root
+                document.documentElement.setAttribute("data-theme", actualTheme);
+                
+                // Update the navbar dropdown toggle button icon
+                if (themeActiveIcon) {
+                    themeActiveIcon.className = `fa-solid ${themeIcons[themeValue]} fs-6`;
+                }
+            }
+
+            // Load saved theme choice or fallback to "system"
+            const savedTheme = localStorage.getItem("themePreference") || "system";
+            applyTheme(savedTheme);
+
+            // Add click listeners to dropdown theme selectors
+            const themeOptionButtons = document.querySelectorAll("[data-theme-value]");
+            themeOptionButtons.forEach(button => {
+                button.addEventListener("click", function() {
+                    const targetTheme = this.getAttribute("data-theme-value");
+                    localStorage.setItem("themePreference", targetTheme);
+                    applyTheme(targetTheme);
+                });
+            });
+
+            // System color preference change listener (hot-reloads theme in system mode)
+            window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", function(e) {
+                const currentPreference = localStorage.getItem("themePreference") || "system";
+                if (currentPreference === "system") {
+                    applyTheme("system");
+                }
+            });
+        });
+    </script>
     {% block scripts %}{% endblock %}
 </body>
 </html>
