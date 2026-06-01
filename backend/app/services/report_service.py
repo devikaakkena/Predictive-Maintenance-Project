@@ -1,6 +1,5 @@
 import os
 import time
-import logging
 from pathlib import Path
 from reportlab.lib.pagesizes import letter
 from reportlab.lib import colors
@@ -10,9 +9,20 @@ from reportlab.pdfgen import canvas
 
 from backend.app.config.settings import Config
 from backend.app.services.dashboard_service import DashboardService
+from backend.app.utils.logger import app_logger, errors_logger
 
-# Configure logger
-logger = logging.getLogger(__name__)
+# Route logger to centralized loggers
+class LoggerBridge:
+    def info(self, msg, *args, **kwargs):
+        app_logger.info(msg, *args, **kwargs)
+    def warning(self, msg, *args, **kwargs):
+        app_logger.warning(msg, *args, **kwargs)
+    def error(self, msg, *args, **kwargs):
+        errors_logger.error(msg, *args, **kwargs)
+
+logger = LoggerBridge()
+
+
 
 # Resolve absolute paths
 BASE_DIR = Path(__file__).resolve().parents[3]

@@ -1,15 +1,24 @@
 import joblib
 import pandas as pd
-import logging
 from pathlib import Path
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
 
 from backend.app.config.settings import Config
 from backend.app.services.prediction_service import PredictionService
 from backend.app.services.analysis_service import AnalysisService
+from backend.app.utils.logger import app_logger, errors_logger
 
-# Configure logger
-logger = logging.getLogger(__name__)
+# Route logger to centralized loggers
+class LoggerBridge:
+    def info(self, msg, *args, **kwargs):
+        app_logger.info(msg, *args, **kwargs)
+    def warning(self, msg, *args, **kwargs):
+        app_logger.warning(msg, *args, **kwargs)
+    def error(self, msg, *args, **kwargs):
+        errors_logger.error(msg, *args, **kwargs)
+
+logger = LoggerBridge()
+
 
 class DashboardService:
     def __init__(self):

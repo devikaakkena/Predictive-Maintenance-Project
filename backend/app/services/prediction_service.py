@@ -2,6 +2,7 @@ import pandas as pd
 from backend.app.utils.model_loader import load_prediction_model
 from backend.app.utils.preprocess import extract_features
 from backend.app.utils.helpers import format_prediction
+from backend.app.utils.logger import predictions_logger, errors_logger
 
 class PredictionService:
     def __init__(self):
@@ -10,14 +11,31 @@ class PredictionService:
 
     def predict_single(self, features: list) -> str:
         """Runs prediction on a single record and returns the formatted label."""
-        prediction = self.model.predict([features])[0]
-        return format_prediction(prediction)
+        try:
+            prediction = self.model.predict([features])[0]
+            label = format_prediction(prediction)
+            predictions_logger.info(f"Model Inference: Features {features} -> Prediction: {label}")
+            return label
+        except Exception as e:
+            errors_logger.error(f"Failed to run model inference on features {features}: {str(e)}")
+            raise e
 
     def predict_batch(self, df: pd.DataFrame) -> pd.DataFrame:
         """Appends a 'Prediction' column to the dataframe with formatted labels."""
-        X = extract_features(df)
-        predictions = self.model.predict(X)
-        
-        df_copy = df.copy()
-        df_copy["Prediction"] = [format_prediction(p) for p in predictions]
-        return df_copy
+        try:
+            predictions_logger.info(f"Model Inference: Running batch prediction on {len(df)} records...")
+            X = extract_features(df)
+            predictions = self.model.predict(X)
+            
+            df_copy = df.copy()
+            df_copy["Prediction"] = [format_prediction(p) for p in predictions]
+            
+            failures_count = sum(1 for p in predictions if p != 0)
+            predictions_logger.info(
+                f"Model Inference: Completed batch prediction. Flagged {failures_count} failure conditions out of {len(df)} records."
+            )
+            return df_copy
+        except Exception as e:
+            errors_logger.error(f"Failed to run model batch inference: {str(e)}")
+            raise e
+

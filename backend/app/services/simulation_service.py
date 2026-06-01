@@ -1,9 +1,7 @@
 import random
-import logging
 from backend.app.services.prediction_service import PredictionService
+from backend.app.utils.logger import simulation_logger
 
-# Configure logger
-logger = logging.getLogger(__name__)
 
 # Persistent simulation state to model tool wear accumulation and resetting
 _sim_state = {
@@ -33,7 +31,7 @@ class SimulationService:
         # 1. Accumulate tool wear, trigger a dynamic reset after 240 minutes
         _sim_state["tool_wear"] += random.uniform(1.0, 3.5)
         if _sim_state["tool_wear"] > 240.0:
-            logger.info("Simulation: Tool wear limit exceeded. Simulating cutting head replacements...")
+            simulation_logger.info("Simulation: Tool wear limit exceeded. Simulating cutting head replacements...")
             _sim_state["tool_wear"] = 0.0
             
         tool_wear = round(_sim_state["tool_wear"], 1)
@@ -51,7 +49,7 @@ class SimulationService:
         
         if random.random() < 0.08 or (tool_wear > 190.0 and random.random() < 0.25):
             anomaly_injected = True
-            logger.warning("Simulation: Anomaly spike injected into telemetry stream!")
+            simulation_logger.warning("Simulation: Anomaly spike injected into telemetry stream!")
             # Simulate high-load friction failures (torque spike, rotational speed drop)
             torque = round(random.uniform(62.0, 78.0), 1)
             speed = round(random.uniform(980.0, 1150.0), 1)

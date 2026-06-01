@@ -1,9 +1,6 @@
 from flask import Blueprint, jsonify
-import logging
 from backend.app.services.simulation_service import SimulationService
-
-# Configure logger
-logger = logging.getLogger(__name__)
+from backend.app.utils.logger import simulation_logger, errors_logger
 
 simulation_bp = Blueprint("simulation", __name__, url_prefix="/api")
 simulation_service = SimulationService()
@@ -17,10 +14,16 @@ def get_simulation_stream():
     Returns:
         Response: The telemetry event payload in JSON format.
     """
-    logger.info("Serving dynamic real-time operational sensor telemetry event...")
+    simulation_logger.info("Serving dynamic real-time operational sensor telemetry event...")
     try:
         telemetry = simulation_service.generate_sensor_telemetry()
+        simulation_logger.info(
+            f"Simulated Event - AirTemp: {telemetry['air_temp']}K, Speed: {telemetry['speed']}rpm, "
+            f"Torque: {telemetry['torque']}Nm, ToolWear: {telemetry['tool_wear']}min -> "
+            f"Prediction: {telemetry['prediction']}, Status: {telemetry['status']}"
+        )
         return jsonify(telemetry)
     except Exception as e:
-        logger.error(f"Failed to generate sensor telemetry event: {str(e)}")
+        errors_logger.error(f"Failed to generate sensor telemetry event: {str(e)}")
         return jsonify({"error": str(e)}), 500
+
