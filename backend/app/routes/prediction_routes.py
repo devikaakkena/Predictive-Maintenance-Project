@@ -11,8 +11,12 @@ prediction_service = PredictionService()
 @prediction_bp.route("/predictions", methods=["GET"])
 def predict_view():
     predictions_logger.info("Serving predictions manual inference form page.")
+    recent_predictions = prediction_service.get_recent_predictions()
     # Render the input parameters form page
-    return render_template("dashboard/predictions.html")
+    return render_template(
+        "dashboard/predictions.html",
+        recent_predictions=recent_predictions
+    )
 
 @prediction_bp.route("/predict", methods=["POST"])
 def predict():
@@ -29,20 +33,23 @@ def predict():
             f"Speed: {speed}rpm, Torque: {torque}Nm, ToolWear: {tool_wear}min"
         )
         
-        # Predict single instance
+        # Predict single instance with detailed outputs
         features = [air_temp, process_temp, speed, torque, tool_wear]
-        result = prediction_service.predict_single(features)
-        
-        predictions_logger.info(f"Manual Inference Result: {result}")
+        prediction_detail = prediction_service.predict_single_detailed(features)
+        recent_predictions = prediction_service.get_recent_predictions()
         
         return render_template(
             "dashboard/predictions.html",
-            prediction_text=result
+            prediction_text=prediction_detail["result"],
+            prediction_detail=prediction_detail,
+            recent_predictions=recent_predictions
         )
     except Exception as e:
         errors_logger.error(f"Failed to run manual inference: {str(e)}")
+        recent_predictions = prediction_service.get_recent_predictions()
         return render_template(
             "dashboard/predictions.html",
-            prediction_text=f"Error running prediction: {str(e)}"
+            prediction_text=f"Error running prediction: {str(e)}",
+            recent_predictions=recent_predictions
         )
 

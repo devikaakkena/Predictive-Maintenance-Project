@@ -18,11 +18,12 @@ def home():
         stats = dashboard_service.get_machine_stats()
         metrics = dashboard_service.get_model_performance_metrics()
         
-        # Load dataset for predictions logs table
-        data = pd.read_csv(Config.DATA_PATH)
-        predictions_df = prediction_service.predict_batch(data)
+        # Load last 10 records for predictions logs preview table to avoid bloated page loading times
+        data_all = pd.read_csv(Config.DATA_PATH)
+        data_tail = data_all.tail(10)
+        predictions_df = prediction_service.predict_batch(data_tail)
         
-        app_logger.info(f"Loaded {len(data)} records for dashboard preview successfully.")
+        app_logger.info(f"Loaded {len(data_all)} records (displaying latest 10) for dashboard preview successfully.")
         
         # Load dynamic insights at runtime
         from pathlib import Path

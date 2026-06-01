@@ -70,4 +70,85 @@ class PredictionService:
             errors_logger.error(f"Failed to run model batch inference: {str(e)}")
             raise e
 
+    def get_recent_predictions(self) -> list:
+        """Loads the latest 10 manual predictions from the JSON file."""
+        from pathlib import Path
+        import json
+        base_dir = Path(__file__).resolve().parents[4]
+        json_path = base_dir / "outputs" / "predictions" / "recent_predictions.json"
+        if json_path.exists():
+            try:
+                with open(json_path, "r", encoding="utf-8") as f:
+                    return json.load(f)
+            except Exception:
+                pass
+        return []
 
+    def add_recent_prediction(self, prediction_entry: dict) -> None:
+        """Saves a new prediction to outputs/predictions/recent_predictions.json and truncates to 10 entries."""
+        from pathlib import Path
+        import json
+        base_dir = Path(__file__).resolve().parents[4]
+        json_dir = base_dir / "outputs" / "predictions"
+        json_dir.mkdir(parents=True, exist_ok=True)
+        json_path = json_dir / "recent_predictions.json"
+        
+        recent = self.get_recent_predictions()
+        recent.insert(0, prediction_entry)
+        recent = recent[:10]  # Keep latest 10 only
+        
+        try:
+            with open(json_path, "w", encoding="utf-8") as f:
+                json.dump(recent, f, indent=4)
+        except Exception as e:
+            errors_logger.error(f"Failed to save recent prediction to JSON: {str(e)}")
+
+    def predict_single_detailed(self, features: list) -> dict:
+        """Runs detailed prediction on a single record and returns rich classification indicators."""
+        import time
+        try:
+            # Scale features before prediction
+            scaled_features = self.scaler.transform([features])[0]
+            
+            prob = 0.0
+            if hasattr(self.model, "predict_proba"):
+                prob = float(self.model.predict_proba([scaled_features])[0][1])
+                prediction = 1 if prob >= self.threshold else 0
+            else:
+                prediction = int(self.model.predict([scaled_features])[0])
+                prob = 1.0 if prediction == 1 else 0.0
+                
+            # Confidence is the probability of the chosen class
+            confidence = prob if prediction == 1 else (1.0 - prob)
+            
+            # Determine status badge
+            air_temp, process_temp, speed, torque, tool_wear = features
+            if prediction == 1:
+                status = "CRITICAL"
+                status_color = "danger"
+            elif tool_wear > 175 or torque > 50 or prob >= 0.40:
+                status = "WARNING"
+                status_color = "warning"
+            else:
+                status = "SAFE"
+                status_color = "success"
+                
+            label = format_prediction(prediction)
+            
+            prediction_entry = {
+                "timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
+                "sensor_summary": f"Air: {air_temp:.1f}K | Speed: {speed:.0f}rpm | Torque: {torque:.1f}Nm",
+                "result": label,
+                "confidence": int(confidence * 100),
+                "status": status,
+                "status_color": status_color,
+                "raw_features": features
+            }
+            
+            self.add_recent_prediction(prediction_entry)
+            
+            predictions_logger.info(f"Detailed Inference: {prediction_entry}")
+            return prediction_entry
+        except Exception as e:
+            errors_logger.error(f"Failed to run detailed model inference: {str(e)}")
+            raise e

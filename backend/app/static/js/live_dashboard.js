@@ -12,6 +12,7 @@ document.addEventListener("DOMContentLoaded", function() {
     // UI Selectors
     const toggleSimBtn = document.getElementById("toggleSimBtn");
     const liveModeBadge = document.getElementById("liveModeBadge");
+    const liveStatusPulseBadge = document.getElementById("liveStatusPulseBadge");
     
     const liveAirTemp = document.getElementById("liveAirTemp");
     const liveProcTemp = document.getElementById("liveProcTemp");
@@ -21,6 +22,15 @@ document.addEventListener("DOMContentLoaded", function() {
     
     const liveStatusBadge = document.getElementById("liveStatusBadge");
     const liveAlertBox = document.getElementById("liveAlertBox");
+
+    // Helper functions for dynamic counter formatting
+    function formatNumberWithCommas(num) {
+        return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
+
+    function parseNumberWithCommas(str) {
+        return parseInt(str.replace(/,/g, ''), 10) || 0;
+    }
     
     /**
      * Polls the backend simulation stream API and updates UI nodes.
@@ -64,6 +74,63 @@ document.addEventListener("DOMContentLoaded", function() {
                     liveAlertBox.className = "alert alert-danger py-2 px-3 m-0 d-inline-block shadow-sm";
                     liveAlertBox.innerHTML = '<i class="fa-solid fa-skull-crossbones text-danger me-2"></i>Failure Caught: Friction anomaly detected by Random Forest model!';
                 }
+
+                // 4. Increment Metric Card Counters dynamically
+                const totalValEl = document.querySelector('#totalCard h3');
+                if (totalValEl) {
+                    let totalVal = parseNumberWithCommas(totalValEl.textContent);
+                    totalValEl.textContent = formatNumberWithCommas(totalVal + 1);
+                }
+
+                if (data.status === "Healthy" || data.status === "Warning") {
+                    const healthyValEl = document.querySelector('#healthyCard h3');
+                    if (healthyValEl) {
+                        let healthyVal = parseNumberWithCommas(healthyValEl.textContent);
+                        healthyValEl.textContent = formatNumberWithCommas(healthyVal + 1);
+                    }
+                } else if (data.status === "Critical") {
+                    const failureValEl = document.querySelector('#failureCard h3');
+                    if (failureValEl) {
+                        let failureVal = parseNumberWithCommas(failureValEl.textContent);
+                        failureValEl.textContent = formatNumberWithCommas(failureVal + 1);
+                    }
+                }
+
+                // 5. Update Failure Distribution Doughnut Chart dynamically
+                if (window.failurePieChart && window.failurePieChart.data && window.failurePieChart.data.datasets) {
+                    if (data.status === "Healthy" || data.status === "Warning") {
+                        window.failurePieChart.data.datasets[0].data[0] += 1;
+                    } else if (data.status === "Critical") {
+                        window.failurePieChart.data.datasets[0].data[1] += 1;
+                    }
+                    window.failurePieChart.update();
+                }
+
+                // 6. Prepend new row to table body
+                const tableBody = document.querySelector(".table-responsive table tbody");
+                if (tableBody) {
+                    const isFailure = data.prediction.includes("Failure");
+                    const tr = document.createElement("tr");
+                    tr.style.backgroundColor = isFailure ? "rgba(239, 68, 68, 0.1)" : "rgba(16, 185, 129, 0.05)";
+                    tr.innerHTML = `
+                        <td>SIM</td>
+                        <td>SIM_L${Math.floor(10000 + Math.random() * 90000)}</td>
+                        <td>L</td>
+                        <td>${data.air_temp}</td>
+                        <td>${data.process_temp}</td>
+                        <td>${data.speed}</td>
+                        <td>${data.torque}</td>
+                        <td>${data.tool_wear}</td>
+                        <td>${isFailure ? 1 : 0}</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>${data.prediction}</td>
+                    `;
+                    tableBody.insertBefore(tr, tableBody.firstChild);
+                }
             })
             .catch(err => {
                 console.error("Telemetry streaming error: ", err);
@@ -92,6 +159,11 @@ document.addEventListener("DOMContentLoaded", function() {
             
             liveAlertBox.className = "alert alert-secondary py-2 px-3 m-0 d-inline-block shadow-sm";
             liveAlertBox.innerHTML = '<i class="fa-solid fa-circle-info text-primary me-2"></i>Telemetry stream currently paused.';
+
+            if (liveStatusPulseBadge) {
+                liveStatusPulseBadge.className = "badge bg-secondary rounded-pill px-2.5 py-1 text-uppercase fw-semibold ms-2";
+                liveStatusPulseBadge.innerHTML = '<i class="fa-solid fa-circle me-1.5 fs-9"></i>OFFLINE';
+            }
         } else {
             // Start streaming
             isStreaming = true;
@@ -103,6 +175,11 @@ document.addEventListener("DOMContentLoaded", function() {
             
             liveModeBadge.className = "badge bg-success py-1.5 px-3 rounded-pill text-uppercase text-white";
             liveModeBadge.textContent = "Streaming";
+
+            if (liveStatusPulseBadge) {
+                liveStatusPulseBadge.className = "badge bg-success pulse-live-badge rounded-pill px-2.5 py-1 text-uppercase fw-semibold ms-2";
+                liveStatusPulseBadge.innerHTML = '<i class="fa-solid fa-circle me-1.5 fs-9"></i>LIVE';
+            }
         }
     });
 });

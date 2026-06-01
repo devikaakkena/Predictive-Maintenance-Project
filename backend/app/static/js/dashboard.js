@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", function() {
             return response.json();
         })
         .then(data => {
-            createPieChart("failureDistributionChart", data.labels, data.values);
+            window.failurePieChart = createPieChart("failureDistributionChart", data.labels, data.values);
         })
         .catch(err => console.error("Error drawing prediction summary chart: ", err));
 
