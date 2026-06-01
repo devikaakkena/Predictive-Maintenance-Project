@@ -90,7 +90,31 @@ class DashboardService:
             y_test = pd.read_csv(y_test_path).values.ravel()
             model = joblib.load(best_model_path)
             
-            y_pred = model.predict(X_test)
+            # Load gating threshold and model class name dynamically
+            threshold = 0.50
+            import json
+            threshold_path = self.models_dir / "threshold_results.json"
+            if threshold_path.exists():
+                try:
+                    with open(threshold_path, "r", encoding="utf-8") as f:
+                        th_data = json.load(f)
+                        threshold = th_data.get("optimal_threshold", 0.50)
+                except Exception:
+                    pass
+            
+            model_class_name = model.__class__.__name__
+            if "XGB" in model_class_name:
+                best_model_name = "XGBoost (SMOTE-Tuned)"
+            elif "Forest" in model_class_name:
+                best_model_name = "Random Forest (SMOTE-Tuned)"
+            else:
+                best_model_name = f"{model_class_name} (SMOTE-Tuned)"
+                
+            if hasattr(model, "predict_proba"):
+                probs = model.predict_proba(X_test.values)[:, 1]
+                y_pred = (probs >= threshold).astype(int)
+            else:
+                y_pred = model.predict(X_test.values)
             
             acc = accuracy_score(y_test, y_pred)
             prec = precision_score(y_test, y_pred, average="binary")
@@ -102,7 +126,7 @@ class DashboardService:
                 "precision": float(prec),
                 "recall": float(rec),
                 "f1_score": float(f1),
-                "best_model_name": "Random Forest (Tuned)"
+                "best_model_name": best_model_name
             }
         except Exception as e:
             logger.error(f"Error computing performance metrics dynamically: {str(e)}. Using fallback scores.")
@@ -156,7 +180,24 @@ class DashboardService:
                 y_test = pd.read_csv(y_test_path).values.ravel()
                 model = joblib.load(best_model_path)
                 
-                y_pred = model.predict(X_test)
+                # Load gating threshold dynamically
+                threshold = 0.50
+                import json
+                threshold_path = self.models_dir / "threshold_results.json"
+                if threshold_path.exists():
+                    try:
+                        with open(threshold_path, "r", encoding="utf-8") as f:
+                            th_data = json.load(f)
+                            threshold = th_data.get("optimal_threshold", 0.50)
+                    except Exception:
+                        pass
+                        
+                if hasattr(model, "predict_proba"):
+                    probs = model.predict_proba(X_test.values)[:, 1]
+                    y_pred = (probs >= threshold).astype(int)
+                else:
+                    y_pred = model.predict(X_test.values)
+                    
                 from sklearn.metrics import confusion_matrix
                 cm = confusion_matrix(y_test, y_pred)
                 return cm.tolist()

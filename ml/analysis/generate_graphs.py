@@ -26,6 +26,7 @@ def plot_confusion_matrix(cm: np.ndarray, save_dir: Path = GRAPHS_DIR) -> Path:
     save_dir.mkdir(parents=True, exist_ok=True)
     filename = get_timestamped_filename("confusion_matrix")
     save_path = save_dir / filename
+    fixed_path = save_dir / "confusion_matrix_heatmap.png"
     
     plt.figure(figsize=(6, 5))
     sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', cbar=False,
@@ -35,9 +36,14 @@ def plot_confusion_matrix(cm: np.ndarray, save_dir: Path = GRAPHS_DIR) -> Path:
     plt.ylabel("True Class Label")
     plt.tight_layout()
     
+    # Save timestamped copy for historical/PDF report generators
     plt.savefig(save_path, dpi=150)
+    # Save fixed copy for dashboard visual display
+    plt.savefig(fixed_path, dpi=150)
     plt.close()
+    
     logger.info(f"Saved confusion matrix heatmap to: {save_path}")
+    logger.info(f"Saved fixed confusion matrix heatmap to: {fixed_path}")
     return save_path
 
 def plot_model_comparisons(metrics: Dict[str, Dict[str, float]], save_dir: Path = GRAPHS_DIR) -> None:

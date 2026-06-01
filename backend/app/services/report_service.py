@@ -190,10 +190,23 @@ class ReportService:
         story.append(Paragraph("Autonomous ML pipeline diagnostics and comparative model validation reports.", subtitle_style))
         story.append(Spacer(1, 100))
         
+        # Load dynamic insights
+        import json
+        insights = {}
+        insights_path = BASE_DIR / "ml" / "models" / "pipeline_insights.json"
+        if insights_path.exists():
+            try:
+                with open(insights_path, "r", encoding="utf-8") as f:
+                    insights = json.load(f)
+            except Exception:
+                pass
+                
+        model_name_str = insights.get("best_performing_model", {}).get("name", "XGBoost (SMOTE-Tuned)")
+        
         # Metadata block
         meta_data = [
             [Paragraph("<b>Generated On:</b>", body_style), Paragraph(time.strftime("%B %d, %Y at %H:%M:%S"), body_style)],
-            [Paragraph("<b>Tuned Optimal Model:</b>", body_style), Paragraph("Random Forest (Tuned)", body_style)],
+            [Paragraph("<b>Tuned Optimal Model:</b>", body_style), Paragraph(model_name_str, body_style)],
             [Paragraph("<b>Pipeline Status:</b>", body_style), Paragraph("<font color='#10b981'><b>ACTIVE / STABLE</b></font>", body_style)],
             [Paragraph("<b>Target Workspace:</b>", body_style), Paragraph("Enterprise Production Environment", body_style)]
         ]
@@ -308,9 +321,19 @@ class ReportService:
             
         story.append(Spacer(1, 20))
         story.append(Paragraph("Operational Insights &amp; Recommendations", h1_style))
-        story.append(Paragraph("<b>1. Anomaly Diagnosis:</b> Torque [Nm] and Rotational Speed [rpm] have been classified as the two highest indicators driving predictive maintenance system alarms. Operations controllers must prioritize tracking torque stress.", body_style))
-        story.append(Paragraph("<b>2. Preventive Maintenance Schedule:</b> The anomaly distribution is roughly <b>3.40%</b>, meaning approximately 340 machines in active use demonstrate critical sensor thresholds. It is recommended to perform manual diagnostic sweeps on these specific flagged IDs.", body_style))
-        story.append(Paragraph("<b>3. Model Calibration:</b> With a validation accuracy of <b>98.55%</b> and F1 score of <b>0.7563</b>, the tuned Random Forest classifier operates at high reliability. We recommend scheduled pipeline calibrations monthly to adjust for machine drift.", body_style))
+        
+        primary_feature = insights.get("most_influential_features", {}).get("primary", "Torque [Nm]")
+        secondary_feature = insights.get("most_influential_features", {}).get("secondary", "Tool wear [min]")
+        reco_features = insights.get("most_influential_features", {}).get("recommendation", "Prioritize monitoring sensor thresholds.")
+        recall_pct_text = insights.get("recall_improvement_summary", {}).get("summary_text", "SMOTE resampled training splits increased failure detection recall.")
+        
+        optimal_th = insights.get("threshold_optimization_findings", {}).get("optimal_threshold", 0.73)
+        prec_th = insights.get("threshold_optimization_findings", {}).get("precision_at_threshold", 0.8667)
+        rec_th = insights.get("threshold_optimization_findings", {}).get("recall_at_threshold", 0.7647)
+        
+        story.append(Paragraph(f"<b>1. Anomaly Diagnosis:</b> {reco_features}", body_style))
+        story.append(Paragraph(f"<b>2. Imbalance Mitigation:</b> {recall_pct_text}", body_style))
+        story.append(Paragraph(f"<b>3. Decision Gating Calibration:</b> The model is configured with a Tuned Optimal Gating Threshold of <b>{optimal_th:.2f}</b> inside API routes, yielding a balanced <b>{rec_th*100:.2f}% Recall</b> and <b>{prec_th*100:.2f}% Precision</b>. We recommend scheduled calibrations monthly to adjust for machine drift.", body_style))
         
         # Build dynamic Document
         doc.build(story, canvasmaker=NumberedCanvas)

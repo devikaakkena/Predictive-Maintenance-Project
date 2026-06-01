@@ -1,0 +1,25 @@
+{
+    "best_performing_model": {
+        "name": "XGBoost (SMOTE-Tuned)",
+        "rationale": "Selected based on F1-score optimization which balances false alarms with positive anomaly sensitivity."
+    },
+    "most_influential_features": {
+        "primary": "Torque [Nm]",
+        "secondary": "Tool wear [min]",
+        "recommendation": "Prioritize monitoring Torque [Nm] and Tool wear [min] sensor thresholds to preempt mechanical failures."
+    },
+    "recall_improvement_summary": {
+        "baseline_recall": 0.6471,
+        "optimized_recall": 0.7647058823529411,
+        "improvement_pct": 11.760588235294112,
+        "summary_text": "SMOTE resampled training splits increased failure detection recall by 11.76% (from 0.6471 to 0.7647), cutting missed failures dramatically."
+    },
+    "threshold_optimization_findings": {
+        "optimal_threshold": 0.7300000000000004,
+        "precision_at_threshold": 0.8666666666666667,
+        "recall_at_threshold": 0.7647058823529411,
+        "accuracy_at_threshold": 0.988,
+        "f1_at_threshold": 0.8125,
+        "recommendation": "Configure decision boundary threshold to 0.7300000000000004 inside API routes to achieve a balanced 76.47% Recall and 86.67% Precision."
+    }
+}

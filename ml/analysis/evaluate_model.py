@@ -69,7 +69,24 @@ def run_evaluation_pipeline() -> None:
     
     # 5. Run inference predictions
     logger.info("Running optimal model predictions on test split...")
-    y_pred = best_model.predict(X_test)
+    
+    # Load threshold dynamically from threshold_results.json if it exists
+    threshold = 0.50
+    threshold_path = MODELS_DIR / "threshold_results.json"
+    if threshold_path.exists():
+        try:
+            with open(threshold_path, "r", encoding="utf-8") as f:
+                th_data = json.load(f)
+                threshold = th_data.get("optimal_threshold", 0.50)
+            logger.info(f"Dynamically loaded optimal gating threshold: {threshold:.2f}")
+        except Exception as e:
+            logger.warning(f"Failed to read threshold_results.json: {str(e)}. Using fallback 0.50.")
+            
+    if hasattr(best_model, "predict_proba"):
+        probabilities = best_model.predict_proba(X_test.values)[:, 1]
+        y_pred = (probabilities >= threshold).astype(int)
+    else:
+        y_pred = best_model.predict(X_test.values)
     
     # 6. Compute metrics
     acc = accuracy_score(y_test, y_pred)
@@ -85,6 +102,7 @@ def run_evaluation_pipeline() -> None:
         f"Precision Score: {prec:.4f}\n"
         f"Recall Score   : {rec:.4f}\n"
         f"F1-Score       : {f1:.4f}\n"
+        f"Tuning Threshold: {threshold:.2f}\n"
     )
     
     logger.info(f"\n--- Validation Performance Metrics Summary ---\n{metrics_summary_str}")
