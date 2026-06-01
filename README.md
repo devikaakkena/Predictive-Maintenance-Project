@@ -288,32 +288,23 @@ Open your browser and navigate to: **`http://127.0.0.1:5000/`**
 
 ## 📸 Screenshots & UI Previews
 
-> [!NOTE]
-> Below are structural preview outlines demonstrating our custom-designed dark glassmorphism Operations Dashboard.
+Below are high-resolution captures of the customized Predictive Maintenance Enterprise Operations Interface, showing the premium glassmorphic UI design, interactive ML analytics pipelines, and dynamic real-time telemetry streams:
 
-```
-┌───────────────────────────────────────────────────────────────────────────────────┐
-│ 🔧 PREDMAINT DIAGNOSTIC SYSTEM  [Home]  [Manual Prediction]  [Model Analytics]     │
-├───────────────────────────────────────────────────────────────────────────────────┤
-│                                                                                   │
-│  ┌──────────────────┐  ┌──────────────────┐  ┌──────────────────┐  ┌───────────┐  │
-│  │ Ingested Records │  │ Healthy Machines │  │ Anomaly Flagged  │  │ Accuracy  │  │
-│  │     10,000       │  │      9,660       │  │       340        │  │  98.55%   │  │
-│  └──────────────────┘  └──────────────────┘  └──────────────────┘  └───────────┘  │
-│                                                                                   │
-│  ┌──────────────────────────────────────┐  ┌───────────────────────────────────┐  │
-│  │ Operational Anomaly Distribution     │  │ Tuned Optimal Feature Importance  │  │
-│  │  [ doughnut chart widget showing     │  │  [ horizontal bar chart ranking   │  │
-│  │    96.6% safe vs 3.4% failure ]      │  │    Torque & Speed as key indicators] │  │
-│  └──────────────────────────────────────┘  └───────────────────────────────────┘  │
-│                                                                                   │
-│  ┌─────────────────────────────────────────────────────────────────────────────┐  │
-│  │ Dynamic Sensor Telemetry Stream Simulator    [ Live Polling Stream Status ]  │  │
-│  │   Air Temp: 298.5K  |  Speed: 1492 RPM  |  Torque: 42 Nm  |  Wear: 12 min    │  │
-│  │   Pipeline Inference: ✅ Safe           Operational Status: [ HEALTHY ]     │  │
-│  └─────────────────────────────────────────────────────────────────────────────┘  │
-└───────────────────────────────────────────────────────────────────────────────────┘
-```
+### 1. Operations Home Dashboard
+Displays dynamic machine health statuses, real-time telemetry sensor streaming, classification doughnut charts, and ML feature importance metrics:
+![Operations Home Dashboard](docs/screenshots/dashboard_main.png)
+
+### 2. Comparative Model Analytics
+Displays model benchmarking comparisons, tuned optimal gating threshold details, the 300 DPI Seaborn confusion matrix heatmap, and dynamic executive insight cards:
+![Comparative Model Analytics](docs/screenshots/dashboard_analytics.png)
+
+### 3. Dynamic Manual Machine Inference
+Provides interactive form controls with persistence, percentage prediction confidence meters, operational status badges, and manual prediction run logs:
+![Dynamic Manual Machine Inference](docs/screenshots/dashboard_predictions.png)
+
+### 4. Dynamic PDF Operations Analysis Report
+Compiles dynamic ML precision, recall, and F1 validation statistics, embedding Confusion Matrix heatmaps, optimal feature importance graphs, and proactive executive maintenance recommendations in a presentation-ready format:
+![Dynamic PDF Operations Analysis Report](docs/screenshots/pdf-report.png)
 
 ---
 
@@ -321,7 +312,6 @@ Open your browser and navigate to: **`http://127.0.0.1:5000/`**
 
 In future versions, the predictive maintenance suite can be scaled by implementing:
 - **Time-Series Deep Learning Forecasting**: Integrate LSTM networks to predict parameter drift (e.g. tool wear wear-out profiles) days before failures manifest.
-- **Relational Storage Layer**: Replace baseline CSV polling configurations with database logging (PostgreSQL or SQLite) to record all manual and streaming inference payloads securely.
 - **Docker Containerization**: Deliver isolated environments with `Dockerfile` and `docker-compose` setups for simplified local runs or cloud deployments.
 - **Prometheus/Grafana Metrics**: Expose specialized Prometheus endpoints to monitor operational API health in cloud environments.
 

@@ -1,3 +1,4 @@
+import os
 import logging
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
@@ -10,7 +11,8 @@ LOGS_DIR = BASE_DIR / "outputs" / "logs"
 LOGS_DIR.mkdir(parents=True, exist_ok=True)
 
 # Custom logging parameters
-LOG_LEVEL = logging.INFO
+LOG_LEVEL_STR = os.environ.get("LOG_LEVEL", "INFO").upper()
+LOG_LEVEL = getattr(logging, LOG_LEVEL_STR, logging.INFO)
 MAX_BYTES = 10 * 1024 * 1024  # 10 Megabytes limit
 BACKUP_COUNT = 5
 LOG_FORMAT = "%(asctime)s - %(name)s - %(levelname)s - [%(filename)s:%(lineno)d] - %(message)s"

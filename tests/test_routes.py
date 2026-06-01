@@ -78,3 +78,14 @@ def test_pdf_report_download(client):
     assert response.status_code == 200
     assert response.mimetype == "application/pdf"
     assert "attachment" in response.headers.get("Content-Disposition", "")
+
+def test_download_report_routes(client):
+    """Validates the new dynamic database-backed PDF report download endpoints."""
+    # 1. Test latest route (compiling on the fly fallback)
+    r_latest = client.get("/download-report/latest")
+    assert r_latest.status_code == 200
+    assert r_latest.mimetype == "application/pdf"
+    
+    # 2. Test ID download with missing ID (should yield 404)
+    r_id_missing = client.get("/download-report/99999")
+    assert r_id_missing.status_code == 404

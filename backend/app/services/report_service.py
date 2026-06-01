@@ -76,7 +76,7 @@ class NumberedCanvas(canvas.Canvas):
 class ReportService:
     def __init__(self):
         self.dashboard_service = DashboardService()
-        self.reports_dir = REPORTS_DIR
+        self.reports_dir = Path(Config.REPORT_OUTPUT_PATH)
 
     def _get_latest_chart(self, pattern: str) -> str:
         """Finds the absolute path of the newest timestamped chart on disk."""
@@ -338,4 +338,12 @@ class ReportService:
         # Build dynamic Document
         doc.build(story, canvasmaker=NumberedCanvas)
         logger.info("Dynamic operational PDF document compiled successfully!")
+        
+        # Save persistently to SQLite database report metadata (Step 10 persistence)
+        try:
+            from backend.app.services.database_service import DatabaseService
+            DatabaseService.save_report_metadata(report_name=save_path.name, file_path=str(save_path))
+        except Exception as db_err:
+            logger.error(f"Failed to save report metadata to SQLite database: {str(db_err)}")
+            
         return save_path

@@ -47,3 +47,9 @@ outputs/predictions/
 outputs/reports/
 backend/app/static/graphs/*.png
 ml/analysis/*.png
+
+# ==========================================
+# LOCAL DATABASE & FLASK INSTANCE CACHES
+# ==========================================
+instance/
+*.db

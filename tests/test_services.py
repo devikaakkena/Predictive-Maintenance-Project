@@ -68,3 +68,47 @@ def test_report_service():
         os.remove(pdf_path)
     except OSError:
         pass
+
+def test_database_service():
+    """Validates persistent database CRUD workflows using SQLAlchemy and DatabaseService in isolation."""
+    from backend.app.app import create_app
+    from backend.app.extensions import db
+    from backend.app.services.database_service import DatabaseService
+    from backend.app.models.prediction import Prediction
+    from backend.app.models.report import Report
+    from backend.app.models.log import Log
+    
+    app = create_app()
+    app.config["TESTING"] = True
+    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///:memory:"
+    
+    with app.app_context():
+        # Re-create all tables in memory
+        db.create_all()
+        
+        # 1. Test Prediction persistence
+        mock_features = [302.5, 312.1, 1480.0, 42.1, 12.0]
+        pred_label = "✅ Safe"
+        confidence = 94.5
+        status_str = "SAFE"
+        
+        entry = DatabaseService.save_prediction(mock_features, pred_label, confidence, status_str)
+        assert entry.id is not None
+        assert entry.air_temperature == 302.5
+        assert entry.prediction == pred_label
+        
+        recent = DatabaseService.get_recent_predictions(limit=5)
+        assert len(recent) >= 1
+        assert recent[0]["result"] == pred_label
+        assert recent[0]["status"] == "SAFE"
+        
+        # 2. Test Report persistence
+        rep = DatabaseService.save_report_metadata("test_report.pdf", "/path/to/test_report.pdf")
+        assert rep.id is not None
+        assert rep.report_name == "test_report.pdf"
+        
+        # 3. Test Log persistence
+        log = DatabaseService.save_log_entry("INFO", "Database test running")
+        assert log.id is not None
+        assert log.log_type == "INFO"
+        assert log.message == "Database test running"

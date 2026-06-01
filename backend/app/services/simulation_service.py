@@ -65,6 +65,20 @@ class SimulationService:
         elif tool_wear > 175.0 or torque > 50.0:
             status = "Warning"
             
+        # 6. Save persistently to SQLite database (Step 10 persistence)
+        try:
+            from backend.app.services.database_service import DatabaseService
+            db_status = "CRITICAL" if status == "Critical" else ("WARNING" if status == "Warning" else "SAFE")
+            confidence = 99.0 if db_status == "CRITICAL" else (85.0 if db_status == "WARNING" else 95.0)
+            DatabaseService.save_prediction(
+                features=features,
+                prediction=prediction,
+                confidence_score=confidence,
+                machine_status=db_status
+            )
+        except Exception as db_err:
+            simulation_logger.error(f"Failed to persist simulated telemetry prediction in SQLite: {str(db_err)}")
+            
         return {
             "air_temp": air_temp,
             "process_temp": process_temp,

@@ -71,7 +71,15 @@ class PredictionService:
             raise e
 
     def get_recent_predictions(self) -> list:
-        """Loads the latest 10 manual predictions from the JSON file."""
+        """Loads the latest 10 predictions from the SQLite database, with JSON backup fallback."""
+        try:
+            from backend.app.services.database_service import DatabaseService
+            db_predictions = DatabaseService.get_recent_predictions(limit=10)
+            if db_predictions:
+                return db_predictions
+        except Exception as e:
+            predictions_logger.warning(f"Database query failed, falling back to JSON backup: {str(e)}")
+            
         from pathlib import Path
         import json
         base_dir = Path(__file__).resolve().parents[4]
@@ -145,6 +153,18 @@ class PredictionService:
                 "raw_features": features
             }
             
+            # Save persistently to SQLite database
+            try:
+                from backend.app.services.database_service import DatabaseService
+                DatabaseService.save_prediction(
+                    features=features,
+                    prediction=label,
+                    confidence_score=float(confidence * 100),
+                    machine_status=status
+                )
+            except Exception as db_err:
+                predictions_logger.error(f"Failed to persist prediction in SQLite database: {str(db_err)}")
+                
             self.add_recent_prediction(prediction_entry)
             
             predictions_logger.info(f"Detailed Inference: {prediction_entry}")
