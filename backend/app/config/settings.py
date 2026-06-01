@@ -7,6 +7,7 @@ class Config:
     # Path configuration compatible with Windows
     DATA_PATH = os.path.join(BASE_DIR, "ml", "data", "raw", "ai4i.csv")
     MODEL_PATH = os.path.join(BASE_DIR, "ml", "models", "trained_model.pkl")
+    SCALER_PATH = os.path.join(BASE_DIR, "ml", "models", "scaler.pkl")
     
     FEATURE_COLUMNS = [
         'Air temperature [K]',
