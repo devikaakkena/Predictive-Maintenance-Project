@@ -24,13 +24,27 @@ def home():
         
         app_logger.info(f"Loaded {len(data)} records for dashboard preview successfully.")
         
+        # Load dynamic insights at runtime
+        from pathlib import Path
+        import json
+        insights = {}
+        base_dir = Path(__file__).resolve().parents[3]
+        insights_path = base_dir / "ml" / "models" / "pipeline_insights.json"
+        if insights_path.exists():
+            try:
+                with open(insights_path, "r", encoding="utf-8") as f:
+                    insights = json.load(f)
+            except Exception as e:
+                errors_logger.error(f"Failed to read pipeline_insights.json: {str(e)}")
+                
         return render_template(
             "dashboard/index.html",
             table=predictions_df.to_html(classes="table table-striped table-hover m-0 align-middle", index=False, border=0),
             total_machines=f"{stats['total']:,}",
             healthy_machines=f"{stats['healthy']:,}",
             failure_predictions=f"{stats['failures']:,}",
-            model_accuracy=f"{metrics['accuracy'] * 100:.2f}%"
+            model_accuracy=f"{metrics['accuracy'] * 100:.2f}%",
+            insights=insights
         )
     except Exception as e:
         errors_logger.error(f"Error rendering home dashboard: {str(e)}")

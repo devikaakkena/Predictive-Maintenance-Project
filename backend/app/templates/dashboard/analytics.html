@@ -7,7 +7,7 @@
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
         <h2 class="text-dark fw-bold mb-1">Comparative Operations Analytics</h2>
-        <p class="text-muted mb-0">Analysis reports and performance metrics of trained classifiers.</p>
+        <p class="text-muted mb-0">Autonomous ML pipeline diagnostics and dynamic operational recommendations.</p>
     </div>
     <div>
         <a href="{{ url_for('report.download_pdf_report') }}" class="btn btn-primary rounded shadow-sm px-4 py-2.5 fw-semibold">
@@ -20,7 +20,7 @@
 <div class="row g-4 mb-4">
     <div class="col-md-4">
         {% set title = "Optimal Precision" %}
-        {% set value = precision | default("0.8824") %}
+        {% set value = precision | default("0.8667") %}
         {% set icon = "fa-crosshairs" %}
         {% set color_class = "info" %}
         {% set subtitle = "Precision score performance focus" %}
@@ -28,7 +28,7 @@
     </div>
     <div class="col-md-4">
         {% set title = "Optimal Recall" %}
-        {% set value = recall | default("0.6618") %}
+        {% set value = recall | default("0.7647") %}
         {% set icon = "fa-binoculars" %}
         {% set color_class = "warning" %}
         {% set subtitle = "True positive anomaly detection rate" %}
@@ -36,7 +36,7 @@
     </div>
     <div class="col-md-4">
         {% set title = "Optimal F1-Score" %}
-        {% set value = f1_score | default("0.7563") %}
+        {% set value = f1_score | default("0.8125") %}
         {% set icon = "fa-medal" %}
         {% set color_class = "success" %}
         {% set subtitle = "Harmonic mean of precision and recall" %}
@@ -63,14 +63,119 @@
     </div>
 </div>
 
-<!-- Bottom Section: Confusion Matrix and Report text -->
+<!-- Dynamic Analytics Insight System (Step 6 cards) -->
+<h4 class="text-dark fw-bold mb-3 mt-5"><i class="fa-solid fa-brain text-primary me-2"></i>Dynamic Analytics Insight System</h4>
 <div class="row g-4 mb-4">
+    <!-- Card 1: Model Insights -->
+    <div class="col-md-6 col-lg-4">
+        <div class="card card-custom h-100 shadow-sm border-0">
+            <div class="card-header card-header-custom bg-light d-flex align-items-center">
+                <span class="fs-6 fw-semibold text-dark">
+                    <i class="fa-solid fa-microchip text-primary me-2"></i>1. Model Insights
+                </span>
+            </div>
+            <div class="card-body p-4">
+                <p class="mb-2"><strong>Best Performing Model:</strong> <span class="badge bg-primary text-white">{{ insights.get('best_performing_model', {}).get('name', 'XGBoost (SMOTE-Tuned)') }}</span></p>
+                <p class="text-secondary small mb-0">{{ insights.get('best_performing_model', {}).get('rationale', 'Selected based on F1-score optimization which balances false alarms with positive anomaly sensitivity.') }}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Card 2: Operational Recommendations -->
+    <div class="col-md-6 col-lg-4">
+        <div class="card card-custom h-100 shadow-sm border-0">
+            <div class="card-header card-header-custom bg-light d-flex align-items-center">
+                <span class="fs-6 fw-semibold text-dark">
+                    <i class="fa-solid fa-clipboard-check text-success me-2"></i>2. Operational Recommendations
+                </span>
+            </div>
+            <div class="card-body p-4">
+                <p class="mb-2"><strong>Failure Mitigation:</strong></p>
+                <p class="text-secondary small mb-0">{{ insights.get('most_influential_features', {}).get('recommendation', 'Prioritize monitoring Torque [Nm] and Tool wear [min] sensor thresholds to preempt mechanical failures.') }}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Card 3: Failure Analysis Summary -->
+    <div class="col-md-6 col-lg-4">
+        <div class="card card-custom h-100 shadow-sm border-0">
+            <div class="card-header card-header-custom bg-light d-flex align-items-center">
+                <span class="fs-6 fw-semibold text-dark">
+                    <i class="fa-solid fa-triangle-exclamation text-danger me-2"></i>3. Failure Analysis Summary
+                </span>
+            </div>
+            <div class="card-body p-4">
+                <p class="mb-2"><strong>Anomaly Stresses Correlation:</strong></p>
+                <p class="text-secondary small mb-0">Mechanical failures strongly correlate with spikes in **{{ insights.get('most_influential_features', {}).get('primary', 'Torque [Nm]') }}** and high **{{ insights.get('most_influential_features', {}).get('secondary', 'Tool wear [min]') }}** parameters.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Card 4: Feature Interpretation -->
+    <div class="col-md-6 col-lg-4">
+        <div class="card card-custom h-100 shadow-sm border-0">
+            <div class="card-header card-header-custom bg-light d-flex align-items-center">
+                <span class="fs-6 fw-semibold text-dark">
+                    <i class="fa-solid fa-chart-simple text-info me-2"></i>4. Feature Interpretation
+                </span>
+            </div>
+            <div class="card-body p-4">
+                <p class="mb-2"><strong>Top failure drivers:</strong></p>
+                <ul class="text-secondary small ps-3 mb-0">
+                    <li>Primary: <code>{{ insights.get('most_influential_features', {}).get('primary', 'Torque [Nm]') }}</code></li>
+                    <li>Secondary: <code>{{ insights.get('most_influential_features', {}).get('secondary', 'Tool wear [min]') }}</code></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Card 5: Threshold Optimization Summary -->
+    <div class="col-md-6 col-lg-4">
+        <div class="card card-custom h-100 shadow-sm border-0">
+            <div class="card-header card-header-custom bg-light d-flex align-items-center">
+                <span class="fs-6 fw-semibold text-dark">
+                    <i class="fa-solid fa-sliders text-warning me-2"></i>5. Threshold Optimization
+                </span>
+            </div>
+            <div class="card-body p-4">
+                <p class="mb-2"><strong>Decision Boundary Gating:</strong></p>
+                <p class="text-secondary small mb-0">Optimal classification gating resolved at <strong>{{ "%.2f" | format(insights.get('threshold_optimization_findings', {}).get('optimal_threshold', 0.73) | float) }}</strong>, yielding balanced scores: Precision: <code>{{ "%.2f" | format(insights.get('threshold_optimization_findings', {}).get('precision_at_threshold', 0.8667) | float * 100) }}%</code>, Recall: <code>{{ "%.2f" | format(insights.get('threshold_optimization_findings', {}).get('recall_at_threshold', 0.7647) | float * 100) }}%</code>.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Card 6: Recall Improvement Summary -->
+    <div class="col-md-6 col-lg-4">
+        <div class="card card-custom h-100 shadow-sm border-0">
+            <div class="card-header card-header-custom bg-light d-flex align-items-center">
+                <span class="fs-6 fw-semibold text-dark">
+                    <i class="fa-solid fa-arrow-trend-up text-primary me-2"></i>6. Recall Improvement
+                </span>
+            </div>
+            <div class="card-body p-4">
+                <p class="mb-2"><strong>Class Imbalance Mitigation:</strong></p>
+                <p class="text-secondary small mb-0">{{ insights.get('recall_improvement_summary', {}).get('summary_text', 'SMOTE resampled training splits increased failure detection recall by 11.76% (from 0.6471 to 0.7647), cutting missed failures dramatically.') }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bottom Section: Confusion Matrix and Report text -->
+<div class="row g-4 mb-4 mt-4">
     <div class="col-lg-6">
-        {% set title = "Classification Confusion Matrix" %}
-        {% set canvas_id = "confusionMatrixChart" %}
-        {% set icon = "fa-table-cells" %}
-        {% set badge_text = "Validation True vs Pred" %}
-        {% include 'components/graph_card.html' %}
+        <div class="card card-custom h-100">
+            <div class="card-header card-header-custom d-flex align-items-center justify-content-between">
+                <span class="m-0 fs-6 fw-semibold">
+                    <i class="fa-solid fa-square-poll-horizontal text-primary me-2"></i>Predictive Maintenance Confusion Matrix Heatmap
+                </span>
+                <span class="badge bg-primary bg-opacity-10 text-primary px-2.5 py-1 rounded-pill">
+                    Seaborn Heatmap
+                </span>
+            </div>
+            <div class="card-body p-4 text-center d-flex align-items-center justify-content-center">
+                <img src="{{ url_for('analysis.serve_graph', filename='confusion_matrix_heatmap.png') }}" class="img-fluid rounded border shadow-sm" style="max-height: 280px; width: auto;" alt="Confusion Matrix Heatmap">
+            </div>
+        </div>
     </div>
     
     <div class="col-lg-6">

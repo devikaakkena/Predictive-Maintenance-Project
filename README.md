@@ -327,12 +327,6 @@ In future versions, the predictive maintenance suite can be scaled by implementi
 
 ---
 
-## 👤 Author Information
-
-Designed and developed with care by **Harshavardhan** — Graduate MSc Software Engineering Candidate and Technical DevOps Practitioner.
-
----
-
 ## 📄 License
 
 This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.

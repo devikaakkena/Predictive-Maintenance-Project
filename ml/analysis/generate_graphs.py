@@ -22,24 +22,24 @@ def get_timestamped_filename(base_name: str) -> str:
     return f"{base_name}_{timestamp}.png"
 
 def plot_confusion_matrix(cm: np.ndarray, save_dir: Path = GRAPHS_DIR) -> Path:
-    """Plots and saves a professional confusion matrix heatmap."""
+    """Plots and saves a professional high-resolution confusion matrix heatmap."""
     save_dir.mkdir(parents=True, exist_ok=True)
     filename = get_timestamped_filename("confusion_matrix")
     save_path = save_dir / filename
     fixed_path = save_dir / "confusion_matrix_heatmap.png"
     
     plt.figure(figsize=(6, 5))
-    sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', cbar=False,
+    sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', cbar=True,
                 xticklabels=['Safe', 'Failure'], yticklabels=['Safe', 'Failure'])
-    plt.title("Confusion Matrix Heatmap", fontsize=12, fontweight='bold', pad=10)
-    plt.xlabel("Predicted Class Label")
-    plt.ylabel("True Class Label")
+    plt.title("Predictive Maintenance Confusion Matrix", fontsize=14, fontweight='bold', pad=15)
+    plt.xlabel("Predicted Labels", fontsize=11, fontweight='bold')
+    plt.ylabel("Actual Labels", fontsize=11, fontweight='bold')
     plt.tight_layout()
     
     # Save timestamped copy for historical/PDF report generators
-    plt.savefig(save_path, dpi=150)
-    # Save fixed copy for dashboard visual display
-    plt.savefig(fixed_path, dpi=150)
+    plt.savefig(save_path, dpi=300)
+    # Save fixed copy for dashboard visual display and overwrite-safe logic
+    plt.savefig(fixed_path, dpi=300)
     plt.close()
     
     logger.info(f"Saved confusion matrix heatmap to: {save_path}")

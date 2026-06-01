@@ -16,6 +16,21 @@
     </div>
 </div>
 
+{% if insights %}
+<!-- Dynamic Operational Insight Banner (Step 6) -->
+<div class="alert alert-primary bg-primary bg-opacity-10 text-primary border-0 rounded p-3 mb-4 shadow-sm" style="font-size: 0.9em; border-left: 4px solid #3b82f6 !important;">
+    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+        <span>
+            <i class="fa-solid fa-lightbulb fa-bounce me-2 text-warning"></i>
+            <strong>Dynamic Operational Alert:</strong> {{ insights.get('most_influential_features', {}).get('recommendation', 'Prioritize monitoring Torque [Nm] and Tool wear [min] sensor thresholds to preempt mechanical failures.') }}
+        </span>
+        <a href="{{ url_for('analysis.index') }}" class="btn btn-primary btn-sm rounded px-3 py-1.5 fw-semibold border-0">
+            View Analytics Insights<i class="fa-solid fa-chevron-right ms-1.5"></i>
+        </a>
+    </div>
+</div>
+{% endif %}
+
 <!-- LIVE Industrial Telemetry Stream Section -->
 <div class="card card-custom border-primary border-opacity-25 mb-4 bg-white shadow-sm">
     <div class="card-header card-header-custom d-flex justify-content-between align-items-center bg-light bg-opacity-50">
@@ -114,10 +129,10 @@
     </div>
     <div class="col-xl-3 col-md-6">
         {% set title = "Best Model Accuracy" %}
-        {% set value = model_accuracy | default("98.55%") %}
+        {% set value = model_accuracy | default("98.80%") %}
         {% set icon = "fa-gauge-high" %}
         {% set color_class = "primary" %}
-        {% set subtitle = "Tuned Random Forest model" %}
+        {% set subtitle = insights.get('best_performing_model', {}).get('name', 'XGBoost (SMOTE-Tuned)') %}
         {% include 'components/metric_card.html' %}
     </div>
 </div>
